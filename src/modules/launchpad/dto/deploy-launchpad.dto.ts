@@ -1,36 +1,36 @@
-import { IsNotEmpty } from 'class-validator';
+import { IsNotEmpty } from 'class-validator'
 
 export class DeployLaunchpadDto {
   @IsNotEmpty()
-  maxSupply: number;
+  maxSupply: number
 
   @IsNotEmpty()
-  mintPrice: bigint;
+  mintPrice: bigint
 
   @IsNotEmpty()
-  startTime: number;
+  startTime: number
 
   @IsNotEmpty()
-  endTime: number;
+  endTime: number
 
   @IsNotEmpty()
-  maxMintAmount: number;
+  maxMintAmount: number
 
   @IsNotEmpty()
-  maxWalletAmount: number;
+  maxWalletAmount: number
 
   @IsNotEmpty()
-  creator: string;
+  creator: string
 
   @IsNotEmpty()
-  name: string;
+  name: string
 
   @IsNotEmpty()
-  symbol: string;
+  symbol: string
 
   @IsNotEmpty()
-  baseURI: string;
+  baseURI: string
 
   @IsNotEmpty()
-  merkleRoot: string;
+  merkleRoot: string
 }

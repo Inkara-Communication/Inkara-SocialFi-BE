@@ -8,19 +8,19 @@ import {
   Param,
   Post,
   Put,
-  UseGuards,
-} from '@nestjs/common';
-import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { Launchpad, LaunchpadStatus } from '@prisma/client';
-import { CurrentUser, Public } from '@common/decorators';
-import { AccessTokenGuard } from '@common/guards';
-import { IPayloadUserJwt } from '@common/interfaces';
-import { LaunchpadService } from '@modules/launchpad/services/launchpad.service';
-import { CreateLaunchpadDto } from '@modules/launchpad/dto/create-launchpad.dto';
-import { GetLaunchpadDto } from '@modules/launchpad/dto/get-launchpad.dto';
-import { UpdateLaunchpadDto } from '../dto/update-launchpad.dto';
+  UseGuards
+} from '@nestjs/common'
+import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
+import { Launchpad, LaunchpadStatus } from '@prisma/client'
+import { CurrentUser, Public } from '@common/decorators'
+import { AccessTokenGuard } from '@common/guards'
+import { IPayloadUserJwt } from '@common/interfaces'
+import { LaunchpadService } from '@modules/launchpad/services/launchpad.service'
+import { CreateLaunchpadDto } from '@modules/launchpad/dto/create-launchpad.dto'
+import { GetLaunchpadDto } from '@modules/launchpad/dto/get-launchpad.dto'
+import { UpdateLaunchpadDto } from '../dto/update-launchpad.dto'
 
-const moduleName = 'launchpad';
+const moduleName = 'launchpad'
 
 @ApiTags(moduleName)
 @Controller(moduleName)
@@ -34,9 +34,9 @@ export class LaunchpadController {
   @Post()
   async createLaunchpad(
     @CurrentUser() payload: IPayloadUserJwt,
-    @Body() data: CreateLaunchpadDto,
+    @Body() data: CreateLaunchpadDto
   ): Promise<Launchpad> {
-    return await this.launchpadService.createLaunchpad(payload.id, data);
+    return await this.launchpadService.createLaunchpad(payload.id, data)
   }
 
   @ApiOperation({ summary: 'Find all launchpad' })
@@ -45,8 +45,8 @@ export class LaunchpadController {
   @Get()
   async getLaunchpads() {
     return await this.launchpadService.getLaunchpads({
-      where: { status: LaunchpadStatus.PUBLISHED },
-    });
+      where: { status: LaunchpadStatus.PUBLISHED }
+    })
   }
 
   @ApiOperation({ summary: 'Find all launchpad' })
@@ -54,7 +54,7 @@ export class LaunchpadController {
   @UseGuards(AccessTokenGuard)
   @Post('get')
   async getAllLaunchpads() {
-    return await this.launchpadService.getLaunchpads({});
+    return await this.launchpadService.getLaunchpads({})
   }
 
   @ApiOperation({ summary: 'Find launchpad by id' })
@@ -62,7 +62,7 @@ export class LaunchpadController {
   @Public()
   @Get(':id')
   async getLaunchpad(@Param('id') id: string) {
-    return await this.launchpadService.getLaunchpad({ where: { id } });
+    return await this.launchpadService.getLaunchpad({ where: { id } })
   }
 
   @ApiOperation({ summary: 'Update launchpad', description: 'forbidden' })
@@ -73,12 +73,12 @@ export class LaunchpadController {
   async updateLaunchpad(
     @Param('id') id: string,
     @CurrentUser() payload: IPayloadUserJwt,
-    @Body() data: UpdateLaunchpadDto,
+    @Body() data: UpdateLaunchpadDto
   ) {
     return this.launchpadService.updateLaunchpad(payload.id, {
       where: { id: id },
-      data,
-    });
+      data
+    })
   }
 
   @ApiOperation({ summary: 'Delete launchpad', description: 'forbidden' })
@@ -87,11 +87,11 @@ export class LaunchpadController {
   @Delete(':id')
   async deleteLaunchpad(
     @Param('id') id: string,
-    @CurrentUser() payload: IPayloadUserJwt,
+    @CurrentUser() payload: IPayloadUserJwt
   ) {
     return this.launchpadService.deleteLaunchpad(payload.id, {
-      where: { id: id },
-    });
+      where: { id: id }
+    })
   }
 
   // @ApiOperation({ summary: 'Apply launchpad', description: 'forbidden' })

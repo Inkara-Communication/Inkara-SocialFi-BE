@@ -1,16 +1,16 @@
 // create-activity.dto.ts
 
-import { IsNumber, IsString } from 'class-validator';
+import { IsNumber, IsString } from 'class-validator'
 export class CreateActivityDto {
   @IsString()
-  buyerId?: string;
+  buyerId?: string
 
   @IsString()
-  listingId: string;
+  listingId: string
 
   @IsString()
-  nftId: string;
+  nftId: string
 
   @IsNumber()
-  activityPrice: number;
+  activityPrice: number
 }

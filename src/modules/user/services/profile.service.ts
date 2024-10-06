@@ -1,28 +1,28 @@
 // profile.service.ts
 
-import { Injectable, Logger } from '@nestjs/common';
-import { GeneratorService } from '@common/providers';
-import { UpdateProfileDto } from '@modules/user/dto/update-profile.dto';
-import { OfferToken, Prisma } from '@prisma/client';
-import { PrismaService } from '@prisma/prisma.service';
-import { UserService } from './user.service';
+import { Injectable, Logger } from '@nestjs/common'
+import { GeneratorService } from '@common/providers'
+import { UpdateProfileDto } from '@modules/user/dto/update-profile.dto'
+import { OfferToken, Prisma } from '@prisma/client'
+import { PrismaService } from '@prisma/prisma.service'
+import { UserService } from './user.service'
 
 @Injectable()
 export class ProfileService {
-  private logger = new Logger(ProfileService.name);
+  private logger = new Logger(ProfileService.name)
   constructor(
     private prismaService: PrismaService,
     private userService: UserService,
-    private generatorService: GeneratorService,
+    private generatorService: GeneratorService
   ) {}
 
   public async updateProfile(userId: string, profileDto: UpdateProfileDto) {
     this.logger.log(
-      `${'*'.repeat(20)} updateProfile(${userId}) ${'*'.repeat(20)}`,
-    );
+      `${'*'.repeat(20)} updateProfile(${userId}) ${'*'.repeat(20)}`
+    )
     const profile = await this.prismaService.profile.findUnique({
-      where: { userId },
-    });
+      where: { userId }
+    })
 
     if (profile)
       return await this.prismaService.profile.update({
@@ -32,9 +32,9 @@ export class ProfileService {
           offerToken: OfferToken.ETH, // Need to add BNB for multichain
           minOfferThreshold: profileDto.minOfferThreshold
             ? profileDto.minOfferThreshold.toString()
-            : undefined,
-        },
-      });
+            : undefined
+        }
+      })
     else
       await this.prismaService.profile.create({
         data: {
@@ -49,31 +49,28 @@ export class ProfileService {
           bannerId: undefined,
           user: {
             connect: {
-              id: userId,
-            },
+              id: userId
+            }
           },
           avatar: profileDto.avatarId
             ? {
                 connect: {
-                  id: profileDto.avatarId,
-                },
+                  id: profileDto.avatarId
+                }
               }
             : undefined,
           banner: profileDto.bannerId
             ? {
                 connect: {
-                  id: profileDto.bannerId,
-                },
+                  id: profileDto.bannerId
+                }
               }
-            : undefined,
-        } as Omit<
-          Prisma.ProfileCreateInput,
-          'userId' | 'avatarId' | 'bannerId'
-        >,
-      });
+            : undefined
+        } as Omit<Prisma.ProfileCreateInput, 'userId' | 'avatarId' | 'bannerId'>
+      })
   }
 
   public async getProfile(args: Prisma.ProfileFindUniqueArgs) {
-    return await this.prismaService.profile.findUnique(args);
+    return await this.prismaService.profile.findUnique(args)
   }
 }

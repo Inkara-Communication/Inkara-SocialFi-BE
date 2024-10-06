@@ -1,23 +1,19 @@
 // launchpad.service.ts
 
-import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
-import { Prisma, Launchpad, LaunchpadStatus, PeriodType } from '@prisma/client';
-import { PrismaService } from '@prisma/prisma.service';
-import {
-  GeneratorService,
-  MerkleService,
-  Web3Service,
-} from '@common/providers';
-import { CreateLaunchpadDto } from '../dto/create-launchpad.dto';
+import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common'
+import { Prisma, Launchpad, LaunchpadStatus, PeriodType } from '@prisma/client'
+import { PrismaService } from '@prisma/prisma.service'
+import { GeneratorService, MerkleService, Web3Service } from '@common/providers'
+import { CreateLaunchpadDto } from '../dto/create-launchpad.dto'
 
 @Injectable()
 export class LaunchpadService {
-  private logger = new Logger(LaunchpadService.name);
+  private logger = new Logger(LaunchpadService.name)
   constructor(
     private readonly web3Service: Web3Service,
     private readonly merkleService: MerkleService,
     private readonly prismaService: PrismaService,
-    private generatorService: GeneratorService,
+    private generatorService: GeneratorService
   ) {}
 
   async getLaunchpads(args: Prisma.LaunchpadFindManyArgs) {
@@ -29,14 +25,14 @@ export class LaunchpadService {
         creator: true,
         collection: {
           include: {
-            nfts: true,
-          },
-        },
-      },
-    });
+            nfts: true
+          }
+        }
+      }
+    })
   }
   public async getLaunchpad(
-    args: Prisma.LaunchpadFindUniqueArgs,
+    args: Prisma.LaunchpadFindUniqueArgs
   ): Promise<Launchpad> {
     return await this.prismaService.launchpad.findUnique({
       ...args,
@@ -46,18 +42,18 @@ export class LaunchpadService {
         creator: true,
         collection: {
           include: {
-            nfts: true,
-          },
-        },
-      },
-    });
+            nfts: true
+          }
+        }
+      }
+    })
   }
 
   async createLaunchpad(
     userId: string,
-    data: CreateLaunchpadDto,
+    data: CreateLaunchpadDto
   ): Promise<Launchpad> {
-    this.logger.log(`User ${userId} is trying to create new launchpad`);
+    this.logger.log(`User ${userId} is trying to create new launchpad`)
     const launchpad = await this.prismaService.launchpad.create({
       data: {
         ...data,
@@ -69,46 +65,46 @@ export class LaunchpadService {
         status: LaunchpadStatus.APPLIED,
         creator: {
           connect: {
-            id: userId,
-          },
+            id: userId
+          }
         },
         logoImg: data.logoId
           ? {
               connect: {
-                id: data.logoId,
-              },
+                id: data.logoId
+              }
             }
           : undefined,
         image: data.imageId
           ? {
               connect: {
-                id: data.imageId,
-              },
+                id: data.imageId
+              }
             }
-          : undefined,
+          : undefined
       } as Omit<
         Prisma.LaunchpadCreateInput,
         'creatorId' | 'logoId' | 'imageId' | 'colletionId'
-      >,
-    });
+      >
+    })
 
-    this.logger.log(`applying to deploy new launchpad ${launchpad.id}`);
+    this.logger.log(`applying to deploy new launchpad ${launchpad.id}`)
 
     try {
       const user = await this.prismaService.user.findUnique({
-        where: { id: userId },
-      });
+        where: { id: userId }
+      })
 
       if (!user)
         throw new HttpException(
           'User does not exist',
-          HttpStatus.INTERNAL_SERVER_ERROR,
-        );
+          HttpStatus.INTERNAL_SERVER_ERROR
+        )
 
       const merkleRoot = this.merkleService
         .formMerkleTree(launchpad.wlAddresses, 'sha256')
-        .getHexRoot();
-      this.logger.log(`new merkleroot ${merkleRoot} is generated`);
+        .getHexRoot()
+      this.logger.log(`new merkleroot ${merkleRoot} is generated`)
 
       const collectionAddress = await this.web3Service.deployCollection(
         launchpad.network,
@@ -123,15 +119,15 @@ export class LaunchpadService {
           name: launchpad.name,
           symbol: launchpad.symbol,
           baseURI: launchpad.collectionUri,
-          merkleRoot: merkleRoot,
-        },
-      );
+          merkleRoot: merkleRoot
+        }
+      )
 
       if (!collectionAddress) {
         throw new HttpException(
           'Collection deploy was failed',
-          HttpStatus.INTERNAL_SERVER_ERROR,
-        );
+          HttpStatus.INTERNAL_SERVER_ERROR
+        )
       }
 
       const collection = await this.prismaService.collection.create({
@@ -148,19 +144,19 @@ export class LaunchpadService {
           network: launchpad.network,
           creatorId: launchpad.creatorId,
           launchpadId: launchpad.id,
-          verified: true,
-        },
-      });
+          verified: true
+        }
+      })
 
       await this.prismaService.launchpad.update({
         where: {
-          id: launchpad.id,
+          id: launchpad.id
         },
         data: {
           status: LaunchpadStatus.PUBLISHED,
-          collectionId: collection.id,
-        },
-      });
+          collectionId: collection.id
+        }
+      })
 
       for (const period of Object.values(PeriodType)) {
         await this.prismaService.stat.create({
@@ -172,48 +168,48 @@ export class LaunchpadService {
             salesItems: 0,
             floorPrice: launchpad.mintPrice,
             volume: BigInt(0),
-            period,
-          },
-        });
+            period
+          }
+        })
       }
 
-      return launchpad;
+      return launchpad
     } catch (e) {
-      this.logger.error(e);
-      throw new HttpException(e, HttpStatus.INTERNAL_SERVER_ERROR);
+      this.logger.error(e)
+      throw new HttpException(e, HttpStatus.INTERNAL_SERVER_ERROR)
     }
   }
 
   async updateLaunchpad(
     userId: string,
-    args: Prisma.LaunchpadUpdateArgs,
+    args: Prisma.LaunchpadUpdateArgs
   ): Promise<Launchpad> {
-    this.logger.log(`User ${userId} is trying to update launchpad`);
+    this.logger.log(`User ${userId} is trying to update launchpad`)
     try {
       const user = await this.prismaService.user.findUnique({
-        where: { id: userId },
-      });
+        where: { id: userId }
+      })
       if (!user)
         throw new HttpException(
           'User does not exist',
-          HttpStatus.INTERNAL_SERVER_ERROR,
-        );
+          HttpStatus.INTERNAL_SERVER_ERROR
+        )
 
       const launchpad = await this.prismaService.launchpad.update({
-        ...args,
-      });
-      this.checkCreator(launchpad, userId);
+        ...args
+      })
+      this.checkCreator(launchpad, userId)
 
       const collection = await this.prismaService.collection.findFirst({
         where: {
-          launchpadId: launchpad.id,
-        },
-      });
+          launchpadId: launchpad.id
+        }
+      })
 
       const merkleRoot = this.merkleService
         .formMerkleTree(launchpad.wlAddresses, 'sha256')
-        .getHexRoot();
-      this.logger.log(`new merkleroot ${merkleRoot} is generated`);
+        .getHexRoot()
+      this.logger.log(`new merkleroot ${merkleRoot} is generated`)
 
       const [success, error] = await this.web3Service.editCollection(
         collection.address,
@@ -229,66 +225,63 @@ export class LaunchpadService {
           name: launchpad.name,
           symbol: launchpad.symbol,
           baseURI: launchpad.collectionUri,
-          merkleRoot: merkleRoot,
-        },
-      );
+          merkleRoot: merkleRoot
+        }
+      )
 
       if (!success)
-        throw new HttpException(
-          error.message,
-          HttpStatus.INTERNAL_SERVER_ERROR,
-        );
+        throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR)
 
       await this.prismaService.collection.update({
         where: {
-          id: collection.id,
+          id: collection.id
         },
         data: {
-          supply: launchpad.supply,
-        },
-      });
+          supply: launchpad.supply
+        }
+      })
 
-      return launchpad;
+      return launchpad
     } catch (error) {
-      this.logger.error(error);
-      throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
+      this.logger.error(error)
+      throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR)
     }
   }
 
   async deleteLaunchpad(
     userId: string,
-    args: Prisma.LaunchpadDeleteArgs,
+    args: Prisma.LaunchpadDeleteArgs
   ): Promise<Launchpad> {
-    this.logger.log(`User ${userId} is trying to delete launchpad`);
+    this.logger.log(`User ${userId} is trying to delete launchpad`)
     try {
-      const launchpad = await this.checkLaunchpad(args.where);
-      this.checkCreator(launchpad, userId);
+      const launchpad = await this.checkLaunchpad(args.where)
+      this.checkCreator(launchpad, userId)
 
-      return await this.prismaService.launchpad.delete({ ...args });
+      return await this.prismaService.launchpad.delete({ ...args })
     } catch (error) {
-      this.logger.error(error);
-      throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
+      this.logger.error(error)
+      throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR)
     }
   }
 
   async applyLaunchpad(id: string) {
-    this.logger.log(`applying to deploy new launchpad ${id}`);
+    this.logger.log(`applying to deploy new launchpad ${id}`)
     try {
-      const launchpad = await this.checkLaunchpad({ id });
+      const launchpad = await this.checkLaunchpad({ id })
       const user = await this.prismaService.user.findUnique({
-        where: { id: launchpad.creatorId },
-      });
+        where: { id: launchpad.creatorId }
+      })
 
       if (!user)
         throw new HttpException(
           'User does not exist',
-          HttpStatus.INTERNAL_SERVER_ERROR,
-        );
+          HttpStatus.INTERNAL_SERVER_ERROR
+        )
 
       const merkleRoot = this.merkleService
         .formMerkleTree(launchpad.wlAddresses, 'sha256')
-        .getHexRoot();
-      this.logger.log(`new merkleroot ${merkleRoot} is generated`);
+        .getHexRoot()
+      this.logger.log(`new merkleroot ${merkleRoot} is generated`)
 
       const collectionAddress = await this.web3Service.deployCollection(
         launchpad.network,
@@ -303,25 +296,25 @@ export class LaunchpadService {
           name: launchpad.name,
           symbol: launchpad.symbol,
           baseURI: launchpad.collectionUri,
-          merkleRoot: merkleRoot,
-        },
-      );
+          merkleRoot: merkleRoot
+        }
+      )
 
       if (!collectionAddress) {
         throw new HttpException(
           'Collection deploy was failed',
-          HttpStatus.INTERNAL_SERVER_ERROR,
-        );
+          HttpStatus.INTERNAL_SERVER_ERROR
+        )
       }
 
       await this.prismaService.launchpad.update({
         data: {
-          status: LaunchpadStatus.PUBLISHED,
+          status: LaunchpadStatus.PUBLISHED
         },
         where: {
-          id: launchpad.id,
-        },
-      });
+          id: launchpad.id
+        }
+      })
 
       const collection = await this.prismaService.collection.create({
         data: {
@@ -337,9 +330,9 @@ export class LaunchpadService {
           network: launchpad.network,
           creatorId: launchpad.creatorId,
           launchpadId: launchpad.id,
-          verified: true,
-        },
-      });
+          verified: true
+        }
+      })
 
       for (const period of Object.values(PeriodType)) {
         await this.prismaService.stat.create({
@@ -351,29 +344,29 @@ export class LaunchpadService {
             salesItems: 0,
             floorPrice: launchpad.mintPrice,
             volume: BigInt(0),
-            period,
-          },
-        });
+            period
+          }
+        })
       }
 
-      return launchpad;
+      return launchpad
     } catch (e) {
-      this.logger.error(e);
-      throw new HttpException(e, HttpStatus.INTERNAL_SERVER_ERROR);
+      this.logger.error(e)
+      throw new HttpException(e, HttpStatus.INTERNAL_SERVER_ERROR)
     }
   }
 
   async checkLaunchpad(where: Prisma.LaunchpadWhereUniqueInput) {
     const launchpad = await this.prismaService.launchpad.findUnique({
-      where,
-    });
+      where
+    })
     if (!launchpad)
-      throw new HttpException('Invalid launchpad id', HttpStatus.BAD_REQUEST);
-    return launchpad;
+      throw new HttpException('Invalid launchpad id', HttpStatus.BAD_REQUEST)
+    return launchpad
   }
 
   async checkCreator(launchpad: Launchpad, userId: string) {
     if (launchpad.creatorId !== userId)
-      throw new HttpException('Invalid creator id', HttpStatus.NOT_ACCEPTABLE);
+      throw new HttpException('Invalid creator id', HttpStatus.NOT_ACCEPTABLE)
   }
 }

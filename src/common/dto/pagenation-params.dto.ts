@@ -1,24 +1,24 @@
 // pagenation-params.dto.ts
 
-import { IsNumber, Min, IsOptional } from 'class-validator';
-import { Type } from 'class-transformer';
+import { IsNumber, Min, IsOptional } from 'class-validator'
+import { Type } from 'class-transformer'
 
 export class PaginationParams {
   @IsOptional()
   @Type(() => Number)
   @IsNumber()
   @Min(0)
-  startId?: number;
+  startId?: number
 
   @IsOptional()
   @Type(() => Number)
   @IsNumber()
   @Min(1)
-  offset?: number;
+  offset?: number
 
   @IsOptional()
   @Type(() => Number)
   @IsNumber()
   @Min(1)
-  limit?: number;
+  limit?: number
 }

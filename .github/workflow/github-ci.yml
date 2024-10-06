@@ -45,5 +45,5 @@ jobs:
           SSH_IP_SERVER: ${{ secrets.SSH_IP_SERVER }}
           if: github.ref == 'refs/heads/develop'
         run: |
-          ssh -tt -o StrictHostKeyChecking=no $SSH_USER@$SSH_IP_SERVER "cd usr/src/mezas && git pull && docker-compose build && docker rm -f mezas_backend && docker-compose up -d"
+          ssh -tt -o StrictHostKeyChecking=no $SSH_USER@$SSH_IP_SERVER "cd Inkara-SocialFi-BE && git pull && docker-compose build && docker rm -f Inkara-SocialFi-BE && docker-compose up -d"
           ssh -tt -o StrictHostKeyChecking=no $SSH_USER@$SSH_IP_SERVER "yes | docker image prune --filter 'dangling=true'"

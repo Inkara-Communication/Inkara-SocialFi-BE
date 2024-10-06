@@ -7,19 +7,19 @@ import {
   HttpStatus,
   Post,
   Request,
-  UseGuards,
-} from '@nestjs/common';
-import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { CurrentUser, Public } from '@common/decorators';
-import { AccessTokenGuard, RefreshTokenGuard } from '@common/guards';
-import { IPayloadUserJwt, IRequestWithUser } from '@common/interfaces';
-import { SigninDto } from '@modules/auth/dto/signin.dto';
-import { User } from '@prisma/client';
-import { ForbiddenException } from '../../../errors';
-import { AuthService } from '../services';
-import { SignupDto } from '../dto/signup.dto';
+  UseGuards
+} from '@nestjs/common'
+import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger'
+import { CurrentUser, Public } from '@common/decorators'
+import { AccessTokenGuard, RefreshTokenGuard } from '@common/guards'
+import { IPayloadUserJwt, IRequestWithUser } from '@common/interfaces'
+import { SigninDto } from '@modules/auth/dto/signin.dto'
+import { User } from '@prisma/client'
+import { ForbiddenException } from '../../../errors'
+import { AuthService } from '../services'
+import { SignupDto } from '../dto/signup.dto'
 
-const moduleName = 'auth';
+const moduleName = 'auth'
 
 @ApiTags(moduleName)
 @Controller(moduleName)
@@ -32,7 +32,7 @@ export class AuthController {
   @Post('signup')
   @HttpCode(HttpStatus.OK)
   async signUp(@Body() signupDto: SignupDto) {
-    return this.authService.signUp(signupDto);
+    return this.authService.signUp(signupDto)
   }
 
   @ApiOperation({ summary: 'Sign in' })
@@ -41,7 +41,7 @@ export class AuthController {
   @Post('signin')
   @HttpCode(HttpStatus.OK)
   async signIn(@Body() data: SigninDto): Promise<any> {
-    return await this.authService.signIn(data);
+    return await this.authService.signIn(data)
   }
 
   @ApiOperation({ summary: 'Sign out' })
@@ -49,11 +49,11 @@ export class AuthController {
   @UseGuards(AccessTokenGuard)
   @HttpCode(HttpStatus.OK)
   async signout(
-    @Request() req: IRequestWithUser,
+    @Request() req: IRequestWithUser
   ): Promise<{ message: string }> {
-    await this.authService.signout(req.user.id);
+    await this.authService.signout(req.user.id)
 
-    return { message: 'success' };
+    return { message: 'success' }
   }
 
   @ApiOperation({ summary: 'Refresh token' })
@@ -61,18 +61,18 @@ export class AuthController {
   @Post('refresh')
   @HttpCode(HttpStatus.OK)
   async refreshTokens(@Request() req: IRequestWithUser): Promise<any> {
-    const { user } = req;
-    const refreshToken = req.get('Authorization').replace('Bearer', '').trim();
+    const { user } = req
+    const refreshToken = req.get('Authorization').replace('Bearer', '').trim()
     const payload: IPayloadUserJwt = {
       id: user.id,
-      walletAddress: user.walletAddress,
-    };
+      walletAddress: user.walletAddress
+    }
     const authToken = await this.authService.refreshTokens(
       payload,
-      refreshToken,
-    );
+      refreshToken
+    )
 
-    return authToken;
+    return authToken
   }
 
   @ApiOperation({ summary: 'Validate token', description: 'forbidden' })
@@ -80,8 +80,8 @@ export class AuthController {
   @UseGuards(AccessTokenGuard)
   @HttpCode(HttpStatus.OK)
   async validateToken(@CurrentUser() user: User): Promise<User> {
-    if (!user) throw new ForbiddenException('Unauthorized');
-    await this.authService.validateAccessToken(user.id);
-    return user;
+    if (!user) throw new ForbiddenException('Unauthorized')
+    await this.authService.validateAccessToken(user.id)
+    return user
   }
 }

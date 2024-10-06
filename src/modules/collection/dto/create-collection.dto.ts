@@ -1,97 +1,97 @@
 // create-collection.controller.ts
 
-import { ApiProperty } from '@nestjs/swagger';
-import { Network } from '@prisma/client';
-import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger'
+import { Network } from '@prisma/client'
+import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator'
 
 export class CreateCollectionDto {
   @ApiProperty({
     required: true,
     type: 'string',
-    description: 'Collection name',
+    description: 'Collection name'
   })
   @IsString()
   @IsNotEmpty()
-  name: string;
+  name: string
 
   @ApiProperty({
     required: true,
     type: 'string',
-    description: 'Collection address',
+    description: 'Collection address'
   })
   @IsString()
   @IsNotEmpty()
-  address: string;
+  address: string
 
   @ApiProperty({
     required: true,
     type: 'number',
-    description: 'Total supply',
+    description: 'Total supply'
   })
   @IsNumber()
   @IsNotEmpty()
-  supply: number;
+  supply: number
 
   @ApiProperty({
     required: false,
     type: 'string',
-    description: 'Avatar id',
+    description: 'Avatar id'
   })
   @IsString()
   @IsOptional()
-  avatarId?: string;
+  avatarId?: string
 
   @ApiProperty({
     required: false,
     type: 'string',
-    description: 'Banner id',
+    description: 'Banner id'
   })
   @IsString()
   @IsOptional()
-  bannerId?: string;
+  bannerId?: string
 
   @ApiProperty({
     required: false,
     type: 'string',
-    description: 'Collection description',
+    description: 'Collection description'
   })
   @IsString()
   @IsOptional()
-  desc?: string;
+  desc?: string
 
   @ApiProperty({
     required: false,
     type: 'string',
-    description: 'Website url',
+    description: 'Website url'
   })
   @IsString()
   @IsOptional()
-  website?: string;
+  website?: string
 
   @ApiProperty({
     required: false,
     type: 'string',
-    description: 'Twitter url',
+    description: 'Twitter url'
   })
   @IsString()
   @IsOptional()
-  twitter?: string;
+  twitter?: string
 
   @ApiProperty({
     required: false,
     type: 'string',
-    description: 'Discord url',
+    description: 'Discord url'
   })
   @IsString()
   @IsOptional()
-  discord?: string;
+  discord?: string
 
   @ApiProperty({
     required: true,
     type: 'string',
-    description: 'Network',
+    description: 'Network'
   })
   @IsString()
   @IsNotEmpty()
-  network: Network;
+  network: Network
 }

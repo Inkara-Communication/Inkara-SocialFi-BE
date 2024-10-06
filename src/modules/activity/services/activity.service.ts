@@ -1,18 +1,10 @@
 // activity.service.ts
 
-import {
-  FilterParams,
-  UserFilterByOption,
-} from '@common/dto/filter-params.dto';
-import { PaginationParams } from '@common/dto/pagenation-params.dto';
-import { SearchParams } from '@common/dto/search-params.dto';
-import {
-  CollectionSortByOption,
-  SortParams,
-} from '@common/dto/sort-params.dto';
-import { Injectable } from '@nestjs/common';
-import { ActivityType, Prisma } from '@prisma/client';
-import { PrismaService } from '@prisma/prisma.service';
+import { FilterParams, UserFilterByOption } from '@common/dto/filter-params.dto'
+import { PaginationParams } from '@common/dto/pagenation-params.dto'
+import { Injectable } from '@nestjs/common'
+import { Prisma } from '@prisma/client'
+import { PrismaService } from '@prisma/prisma.service'
 
 @Injectable()
 export class ActivityService {
@@ -22,7 +14,7 @@ export class ActivityService {
     return await this.prismaService.activity.findMany({
       ...args,
       orderBy: {
-        createdAt: 'desc',
+        createdAt: 'desc'
       },
       include: {
         nft: true,
@@ -30,48 +22,48 @@ export class ActivityService {
           include: {
             profile: {
               include: {
-                avatar: true,
-              },
-            },
-          },
+                avatar: true
+              }
+            }
+          }
         },
         buyer: {
           include: {
             profile: {
               include: {
-                avatar: true,
-              },
-            },
-          },
-        },
-      },
-    });
+                avatar: true
+              }
+            }
+          }
+        }
+      }
+    })
   }
 
   async getActivitiesByUser(
     userId: string,
     { filterBy }: FilterParams,
-    { offset = 1, limit = 20, startId = 0 }: PaginationParams,
+    { offset = 1, limit = 20, startId = 0 }: PaginationParams
   ) {
     switch (filterBy) {
       case UserFilterByOption.ACTIVITY:
         return await this.prismaService.activity.findMany({
           where: {
-            OR: [{ buyerId: userId }, { sellerId: userId }],
+            OR: [{ buyerId: userId }, { sellerId: userId }]
           },
           skip: offset * startId,
           take: limit,
           orderBy: {
-            createdAt: 'desc',
+            createdAt: 'desc'
           },
           include: {
             buyer: true,
             seller: true,
-            nft: true,
-          },
-        });
+            nft: true
+          }
+        })
       default:
-        return [];
+        return []
     }
   }
 }

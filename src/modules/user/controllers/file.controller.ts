@@ -9,16 +9,16 @@ import {
   Post,
   UploadedFile,
   UseGuards,
-  UseInterceptors,
-} from '@nestjs/common';
-import { ApiBody, ApiConsumes, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { FileInterceptor } from '@nestjs/platform-express';
-import { Public } from '@common/decorators';
-import { AccessTokenGuard } from '@common/guards';
-import { FileService } from '../services';
-import { UploadFileDto } from '../dto/upload-file.dto';
+  UseInterceptors
+} from '@nestjs/common'
+import { ApiBody, ApiConsumes, ApiOperation, ApiTags } from '@nestjs/swagger'
+import { FileInterceptor } from '@nestjs/platform-express'
+import { Public } from '@common/decorators'
+import { AccessTokenGuard } from '@common/guards'
+import { FileService } from '../services'
+import { UploadFileDto } from '../dto/upload-file.dto'
 
-const moduleName = 'file';
+const moduleName = 'file'
 
 @ApiTags(moduleName)
 @Controller(moduleName)
@@ -32,7 +32,7 @@ export class FileController {
   @Post()
   @UseInterceptors(FileInterceptor('file'))
   async createPhoto(@UploadedFile() file: Express.Multer.File) {
-    return this.fileService.createPhoto(file);
+    return this.fileService.createPhoto(file)
   }
 
   @ApiOperation({ summary: 'Get photo by Id' })
@@ -40,7 +40,7 @@ export class FileController {
   @Get(':photoId')
   @HttpCode(HttpStatus.OK)
   async getPhotoById(@Param('photoId') photoId: string) {
-    return this.fileService.getPhotoById(photoId);
+    return this.fileService.getPhotoById(photoId)
   }
 
   @ApiOperation({ summary: 'Update photo by uploading again' })
@@ -51,8 +51,8 @@ export class FileController {
   @UseInterceptors(FileInterceptor('file'))
   async updatePhotoById(
     @Param('photoId') photoId: string,
-    @UploadedFile() file: Express.Multer.File,
+    @UploadedFile() file: Express.Multer.File
   ) {
-    return this.fileService.updatePhotoById(photoId, file);
+    return this.fileService.updatePhotoById(photoId, file)
   }
 }

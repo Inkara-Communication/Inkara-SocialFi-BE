@@ -1,7 +1,7 @@
-import { BigNumber, utils } from "ethers"
+import { BigNumber, utils } from 'ethers'
 
 export const checkSum = (input: string): string => {
-	return utils.getAddress(input)
+  return utils.getAddress(input)
 }
 
 export const bigNumber = BigNumber.from

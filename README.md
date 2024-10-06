@@ -1,6 +1,6 @@
-# NestJS NFT Marketplace
+# NestJS NFT SocialFi
 
-Welcome to the NestJS NFT Marketplace project! This is a full-stack application built using NestJS, Prisma, and PostgreSQL. The project provides user authentication, NFTs collection, and a launchpad for new collections. It's designed to help you get started with building your own NFT marketplace.
+Welcome to the NestJS NFT SocialFi project! This is a full-stack application built using NestJS, Prisma, and PostgreSQL. The project provides user authentication, NFTs collection, and a launchpad for new collections. It's designed to help you get started with building your own NFT SocialFi.
 
 ## Features
 
@@ -21,7 +21,7 @@ Welcome to the NestJS NFT Marketplace project! This is a full-stack application 
 
    ```sh
    git clone https://github.com/sasuke0601/ink-backend
-   cd nestjs-nft-marketplace
+   cd nestjs-nft-SocialFi
   ```
 2. Install dependencies:
   ```sh
@@ -45,5 +45,5 @@ yarn start:dev
 - Register a new user account.
 - Log in to your account.
 - Create and manage your NFT collections.
-- Explore the marketplace and participate in launchpad events.
+- Explore the SocialFi and participate in launchpad events.
 

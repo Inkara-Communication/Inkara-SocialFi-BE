@@ -1,33 +1,33 @@
 // accept-offer.dto.ts
 
-import { ApiProperty } from '@nestjs/swagger';
-import { Network } from '@prisma/client';
-import { IsEnum, IsNotEmpty, IsString } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger'
+import { Network } from '@prisma/client'
+import { IsEnum, IsNotEmpty, IsString } from 'class-validator'
 export class AcceptOfferDto {
   @ApiProperty({
     required: true,
     type: 'string',
-    description: 'Offer id',
+    description: 'Offer id'
   })
   @IsString()
   @IsNotEmpty()
-  id: string;
+  id: string
 
   @ApiProperty({
     required: true,
     type: 'string',
-    description: 'Transaction hash',
+    description: 'Transaction hash'
   })
   @IsString()
   @IsNotEmpty()
-  txHash: string;
+  txHash: string
 
   @ApiProperty({
     required: true,
     type: 'string',
-    description: 'Network',
+    description: 'Network'
   })
   @IsEnum(Network)
   @IsNotEmpty()
-  network: Network;
+  network: Network
 }

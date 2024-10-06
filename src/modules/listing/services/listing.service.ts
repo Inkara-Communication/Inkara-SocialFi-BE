@@ -1,33 +1,33 @@
 // listing.service.ts
 
-import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common'
 import {
   ActivityType,
   ListingStatus,
   NotificationType,
-  Prisma,
-} from '@prisma/client';
-import { PrismaService } from '@prisma/prisma.service';
+  Prisma
+} from '@prisma/client'
+import { PrismaService } from '@prisma/prisma.service'
 
-import { PaginationParams } from '@common/dto/pagenation-params.dto';
-import { GeneratorService, Web3Service } from '@common/providers';
-import { OrderParameters } from '@common/types';
-import { NotificationService } from '@modules/notification/services/notification.service';
-import { CreateListingDto } from '@modules/listing/dto/create-listing.dto';
-import { ListingDto } from '../dto/listing.dto';
+import { PaginationParams } from '@common/dto/pagenation-params.dto'
+import { GeneratorService, Web3Service } from '@common/providers'
+import { OrderParameters } from '@common/types'
+import { NotificationService } from '@modules/notification/services/notification.service'
+import { CreateListingDto } from '@modules/listing/dto/create-listing.dto'
+import { ListingDto } from '../dto/listing.dto'
 
 @Injectable()
 export class ListingService {
-  private logger = new Logger(ListingService.name);
+  private logger = new Logger(ListingService.name)
   constructor(
     private readonly prismaService: PrismaService,
     private readonly generatorService: GeneratorService,
     private readonly web3Service: Web3Service,
-    private readonly notificationService: NotificationService,
+    private readonly notificationService: NotificationService
   ) {}
 
   async getListings(args: Prisma.ListingFindManyArgs) {
-    return this.prismaService.listing.findMany(args);
+    return this.prismaService.listing.findMany(args)
   }
 
   async getListing(args: Prisma.ListingFindFirstArgs) {
@@ -35,60 +35,60 @@ export class ListingService {
       ...args,
       include: {
         nft: true,
-        seller: true,
-      },
-    });
+        seller: true
+      }
+    })
   }
 
   async getLisitingsByUser(
     sellerId: string,
-    { offset = 1, limit = 20, startId = 0 }: PaginationParams,
+    { offset = 1, limit = 20, startId = 0 }: PaginationParams
   ) {
     return await this.prismaService.listing.findMany({
       where: {
         sellerId,
-        OR: [{ status: ListingStatus.ACTIVE }, { status: ListingStatus.SOLD }],
+        OR: [{ status: ListingStatus.ACTIVE }, { status: ListingStatus.SOLD }]
       },
       skip: offset * startId,
       take: limit,
       orderBy: {
-        createdAt: 'desc',
+        createdAt: 'desc'
       },
       include: {
         seller: true,
-        nft: true,
-      },
-    });
+        nft: true
+      }
+    })
   }
 
   async createListing(userId: string, data: CreateListingDto) {
-    const order: OrderParameters = JSON.parse(data.parameters);
+    const order: OrderParameters = JSON.parse(data.parameters)
     const price = BigInt(
-      order.consideration.reduce((a, c) => a + Number(c.startAmount), ''),
-    );
-    const startTime = new Date(Number(order.startTime) * 1000);
-    const endTime = new Date(Number(order.endTime) * 1000);
+      order.consideration.reduce((a, c) => a + Number(c.startAmount), '')
+    )
+    const startTime = new Date(Number(order.startTime) * 1000)
+    const endTime = new Date(Number(order.endTime) * 1000)
 
     const listing = await this.prismaService.listing.findFirst({
       where: {
         nftId: data.nftId,
-        status: ListingStatus.ACTIVE,
-      },
-    });
+        status: ListingStatus.ACTIVE
+      }
+    })
 
     try {
       if (listing) {
         return await this.prismaService.listing.update({
           where: {
-            id: listing.id,
+            id: listing.id
           },
           data: {
             price,
             startTime,
             endTime,
-            signature: data.signature,
-          },
-        });
+            signature: data.signature
+          }
+        })
       } else {
         const newListing = await this.prismaService.listing.create({
           data: {
@@ -102,16 +102,16 @@ export class ListingService {
             status: ListingStatus.ACTIVE,
             seller: {
               connect: {
-                id: userId,
-              },
+                id: userId
+              }
             },
             nft: {
               connect: {
-                id: data.nftId,
-              },
-            },
-          } as Omit<Prisma.ListingCreateInput, 'nftId'>,
-        });
+                id: data.nftId
+              }
+            }
+          } as Omit<Prisma.ListingCreateInput, 'nftId'>
+        })
 
         await this.prismaService.activity.create({
           data: {
@@ -121,51 +121,51 @@ export class ListingService {
             txHash: '',
             nft: {
               connect: {
-                id: data.nftId,
-              },
+                id: data.nftId
+              }
             },
             seller: {
               connect: {
-                id: userId,
-              },
-            },
-          },
-        });
+                id: userId
+              }
+            }
+          }
+        })
 
-        return newListing;
+        return newListing
       }
     } catch (e) {
-      this.logger.error(e);
-      throw new HttpException(e, HttpStatus.INTERNAL_SERVER_ERROR);
+      this.logger.error(e)
+      throw new HttpException(e, HttpStatus.INTERNAL_SERVER_ERROR)
     }
   }
 
   async cancelListing(userId: string, data: ListingDto) {
-    const order = await this.web3Service.cancelListing(data);
+    const order = await this.web3Service.cancelListing(data)
     if (order.error !== '') {
-      this.logger.error(order.error);
-      throw new HttpException(order.error, HttpStatus.BAD_REQUEST);
+      this.logger.error(order.error)
+      throw new HttpException(order.error, HttpStatus.BAD_REQUEST)
     }
 
     const user = await this.prismaService.user.findUnique({
-      where: { id: userId },
-    });
+      where: { id: userId }
+    })
 
     if (user.walletAddress !== order.orderParameters.offerer)
       throw new HttpException(
         'Invalid Transaction Sender',
-        HttpStatus.EXPECTATION_FAILED,
-      );
+        HttpStatus.EXPECTATION_FAILED
+      )
 
     try {
       const updatedListing = await this.prismaService.listing.update({
         where: {
-          id: data.id,
+          id: data.id
         },
         data: {
-          status: ListingStatus.INACTIVE,
-        },
-      });
+          status: ListingStatus.INACTIVE
+        }
+      })
 
       await this.prismaService.activity.create({
         data: {
@@ -175,57 +175,57 @@ export class ListingService {
           txHash: data.txHash,
           nft: {
             connect: {
-              id: data.nftId,
-            },
+              id: data.nftId
+            }
           },
           seller: {
             connect: {
-              id: userId,
-            },
-          },
-        },
-      });
+              id: userId
+            }
+          }
+        }
+      })
 
-      return updatedListing;
+      return updatedListing
     } catch (err) {
-      throw new HttpException(err, HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException(err, HttpStatus.INTERNAL_SERVER_ERROR)
     }
   }
 
   async buyListing(userId: string, data: ListingDto) {
-    const result = await this.web3Service.buyListing(data);
+    const result = await this.web3Service.buyListing(data)
     if (result.error !== '') {
-      this.logger.error(result.error);
-      throw new HttpException(result.error, HttpStatus.BAD_REQUEST);
+      this.logger.error(result.error)
+      throw new HttpException(result.error, HttpStatus.BAD_REQUEST)
     }
 
     const user = await this.prismaService.user.findUnique({
-      where: { id: userId },
-    });
+      where: { id: userId }
+    })
     if (user.walletAddress !== result.orderParameters.recipient)
       throw new HttpException(
         'Invalid Transaction Sender',
-        HttpStatus.EXPECTATION_FAILED,
-      );
+        HttpStatus.EXPECTATION_FAILED
+      )
 
     try {
       const updatedListing = await this.prismaService.listing.update({
         where: {
-          id: data.id,
+          id: data.id
         },
         data: {
-          status: ListingStatus.SOLD,
-        },
-      });
+          status: ListingStatus.SOLD
+        }
+      })
 
       await this.prismaService.nFT.update({
         where: {
-          id: data.nftId,
+          id: data.nftId
         },
         data: {
-          ownerId: userId,
-        },
-      });
+          ownerId: userId
+        }
+      })
 
       const activity = await this.prismaService.activity.create({
         data: {
@@ -235,34 +235,34 @@ export class ListingService {
           txHash: data.txHash,
           nft: {
             connect: {
-              id: data.nftId,
-            },
+              id: data.nftId
+            }
           },
           seller: {
             connect: {
-              id: updatedListing.sellerId,
-            },
+              id: updatedListing.sellerId
+            }
           },
           buyer: {
             connect: {
-              id: userId,
-            },
-          },
-        },
-      });
+              id: userId
+            }
+          }
+        }
+      })
 
-      this.logger.log('Creating Notification to seller for NFT Sold');
+      this.logger.log('Creating Notification to seller for NFT Sold')
       await this.notificationService.createNotification(
         updatedListing.sellerId,
         {
           activityId: activity.id,
-          type: NotificationType.SOLD,
-        },
-      );
+          type: NotificationType.SOLD
+        }
+      )
 
-      return updatedListing;
+      return updatedListing
     } catch (err) {
-      throw new HttpException(err, HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException(err, HttpStatus.INTERNAL_SERVER_ERROR)
     }
   }
 }

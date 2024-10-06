@@ -1,2 +1,0 @@
--- AlterTable
-ALTER TABLE "Stat" ADD COLUMN     "increased" DOUBLE PRECISION NOT NULL DEFAULT 100;

@@ -1,47 +1,44 @@
 // like.service.ts
 
-import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
-import { PrismaService } from '@prisma/prisma.service';
-import { GeneratorService } from '@common/providers';
-import {
-  FilterParams,
-  UserFilterByOption,
-} from '@common/dto/filter-params.dto';
-import { PaginationParams } from '@common/dto/pagenation-params.dto';
+import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common'
+import { Prisma } from '@prisma/client'
+import { PrismaService } from '@prisma/prisma.service'
+import { GeneratorService } from '@common/providers'
+import { FilterParams, UserFilterByOption } from '@common/dto/filter-params.dto'
+import { PaginationParams } from '@common/dto/pagenation-params.dto'
 
 @Injectable()
 export class LikeService {
-  private logger = new Logger(LikeService.name);
+  private logger = new Logger(LikeService.name)
   constructor(
     private readonly prismaService: PrismaService,
-    private generatorService: GeneratorService,
+    private generatorService: GeneratorService
   ) {}
 
   async getLikesByUser(
     userId: string,
     { filterBy }: FilterParams,
-    { offset = 1, limit = 20, startId = 0 }: PaginationParams,
+    { offset = 1, limit = 20, startId = 0 }: PaginationParams
   ) {
     switch (filterBy) {
       case UserFilterByOption.FAVORITE:
         return await this.prismaService.like.findMany({
           where: {
-            userId,
+            userId
           },
           skip: offset * startId,
           take: limit,
           orderBy: {
-            createdAt: 'desc',
+            createdAt: 'desc'
           },
           include: {
             nft: {
               include: {
-                owner: true,
-              },
-            },
-          },
-        });
+                owner: true
+              }
+            }
+          }
+        })
     }
   }
 
@@ -49,16 +46,16 @@ export class LikeService {
     return await this.prismaService.like.findFirst({
       where: {
         userId,
-        nftId,
+        nftId
       },
       include: {
         nft: {
           include: {
-            owner: true,
-          },
-        },
-      },
-    });
+            owner: true
+          }
+        }
+      }
+    })
   }
 
   async createLike(userId: string, nftId: string) {
@@ -69,35 +66,35 @@ export class LikeService {
         nftId: undefined,
         user: {
           connect: {
-            id: userId,
-          },
+            id: userId
+          }
         },
         nft: {
           connect: {
-            id: nftId,
-          },
-        },
-      } as Omit<Prisma.LikeCreateInput, 'userId' | 'nftId'>,
-    });
+            id: nftId
+          }
+        }
+      } as Omit<Prisma.LikeCreateInput, 'userId' | 'nftId'>
+    })
   }
 
   async deleteLike(nftId: string, userId: string) {
     try {
       const like = await this.prismaService.like.findFirst({
-        where: { nftId, userId },
-      });
+        where: { nftId, userId }
+      })
       if (!like)
         throw new HttpException(
           'Invalid nftId or userId',
-          HttpStatus.EXPECTATION_FAILED,
-        );
+          HttpStatus.EXPECTATION_FAILED
+        )
 
       return await this.prismaService.like.delete({
-        where: { id: like.id },
-      });
+        where: { id: like.id }
+      })
     } catch (e) {
-      this.logger.error(e);
-      throw new HttpException(e, HttpStatus.INTERNAL_SERVER_ERROR);
+      this.logger.error(e)
+      throw new HttpException(e, HttpStatus.INTERNAL_SERVER_ERROR)
     }
   }
 }

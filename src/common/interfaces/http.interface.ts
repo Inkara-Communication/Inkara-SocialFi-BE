@@ -1,11 +1,11 @@
-import { Request, Response } from 'express';
+import { Request, Response } from 'express'
 
 export interface IRequestWithUser extends Request {
-  user: IUserFromRequest;
-  res?: Response;
+  user: IUserFromRequest
+  res?: Response
 }
 
 export interface IUserFromRequest {
-  id: string;
-  walletAddress: string;
+  id: string
+  walletAddress: string
 }

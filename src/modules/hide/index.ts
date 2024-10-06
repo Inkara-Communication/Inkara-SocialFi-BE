@@ -1,1 +1,1 @@
-export * from './hide.module';
+export * from './hide.module'

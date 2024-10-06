@@ -8,18 +8,18 @@ import {
   Param,
   Post,
   Query,
-  UseGuards,
-} from '@nestjs/common';
-import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { User } from '@prisma/client';
-import { CurrentUser } from '@common/decorators';
-import { AccessTokenGuard } from '@common/guards';
-import { FilterParams } from '@common/dto/filter-params.dto';
-import { PaginationParams } from '@common/dto/pagenation-params.dto';
-import { CreateHideDto } from '../dto/create-hide.dto';
-import { HideService } from '../services/hide.service';
+  UseGuards
+} from '@nestjs/common'
+import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger'
+import { User } from '@prisma/client'
+import { CurrentUser } from '@common/decorators'
+import { AccessTokenGuard } from '@common/guards'
+import { FilterParams } from '@common/dto/filter-params.dto'
+import { PaginationParams } from '@common/dto/pagenation-params.dto'
+import { CreateHideDto } from '../dto/create-hide.dto'
+import { HideService } from '../services/hide.service'
 
-const moduleName = 'hide';
+const moduleName = 'hide'
 
 @ApiTags(moduleName)
 @Controller(moduleName)
@@ -32,9 +32,9 @@ export class HideController {
   async getHidesByUser(
     @CurrentUser() user: User,
     @Query() filter: FilterParams,
-    @Query() pagination: PaginationParams,
+    @Query() pagination: PaginationParams
   ) {
-    return await this.hideService.getHidesByUser(user.id, filter, pagination);
+    return await this.hideService.getHidesByUser(user.id, filter, pagination)
   }
 
   @ApiOperation({ summary: 'Create new hide', description: 'forbidden' })
@@ -43,15 +43,15 @@ export class HideController {
   @Post()
   async createHide(
     @CurrentUser() user: User,
-    @Body() { nftId }: CreateHideDto,
+    @Body() { nftId }: CreateHideDto
   ) {
-    return await this.hideService.createHide(user.id, nftId);
+    return await this.hideService.createHide(user.id, nftId)
   }
 
   @ApiOperation({ summary: 'Delete hide', description: 'forbidden' })
   @UseGuards(AccessTokenGuard)
   @Delete(':nftId')
   async deleteHide(@Param('nftId') nftId: string, @CurrentUser() user: User) {
-    return await this.hideService.deleteHide(nftId, user.id);
+    return await this.hideService.deleteHide(nftId, user.id)
   }
 }

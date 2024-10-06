@@ -1,17 +1,16 @@
-import { forwardRef, Module } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
-import { JwtModule } from '@nestjs/jwt';
-import { PassportModule } from '@nestjs/passport';
+import { forwardRef, Module } from '@nestjs/common'
+import { ConfigModule, ConfigService } from '@nestjs/config'
+import { JwtModule } from '@nestjs/jwt'
 
-import { UserModule } from '@modules/user';
-import { UserService } from '@modules/user/services/user.service';
+import { UserModule } from '@modules/user'
+import { UserService } from '@modules/user/services/user.service'
 
-import { AuthController } from './controller/auth.controller';
-import { AuthService, TokenService } from './services';
-import { AccessTokenStrategy, RefreshTokenStrategy } from './strategies';
+import { AuthController } from './controller/auth.controller'
+import { AuthService, TokenService } from './services'
+import { AccessTokenStrategy, RefreshTokenStrategy } from './strategies'
 
-import { RedisModule } from '@redis/redis.module';
-import { RedisService } from '@redis/redis.service';
+import { RedisModule } from '@redis/redis.module'
+import { RedisService } from '@redis/redis.service'
 
 const providers = [
   AuthService,
@@ -19,8 +18,8 @@ const providers = [
   TokenService,
   AccessTokenStrategy,
   RefreshTokenStrategy,
-  RedisService,
-];
+  RedisService
+]
 
 @Module({
   imports: [
@@ -33,14 +32,14 @@ const providers = [
         publicKey: configService.get('secrets.JWT_PUBLIC_KEY'),
         signOptions: {
           expiresIn: configService.get('secrets.JWT_EXPIRE_TIME'),
-          algorithm: configService.get('secrets.JWT_ALGORITHM'),
-        },
-      }),
+          algorithm: configService.get('secrets.JWT_ALGORITHM')
+        }
+      })
     }),
-    RedisModule,
+    RedisModule
   ],
   providers,
   controllers: [AuthController],
-  exports: [AuthService],
+  exports: [AuthService]
 })
 export class AuthModule {}

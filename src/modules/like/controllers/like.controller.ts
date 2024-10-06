@@ -8,18 +8,18 @@ import {
   Param,
   Post,
   Query,
-  UseGuards,
-} from '@nestjs/common';
-import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { User } from '@prisma/client';
-import { CurrentUser } from '@common/decorators';
-import { AccessTokenGuard } from '@common/guards';
-import { CreateLikeDto } from '../dto/create-like.dto';
-import { LikeService } from '../services/like.service';
-import { FilterParams } from '@common/dto/filter-params.dto';
-import { PaginationParams } from '@common/dto/pagenation-params.dto';
+  UseGuards
+} from '@nestjs/common'
+import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger'
+import { User } from '@prisma/client'
+import { CurrentUser } from '@common/decorators'
+import { AccessTokenGuard } from '@common/guards'
+import { CreateLikeDto } from '../dto/create-like.dto'
+import { LikeService } from '../services/like.service'
+import { FilterParams } from '@common/dto/filter-params.dto'
+import { PaginationParams } from '@common/dto/pagenation-params.dto'
 
-const moduleName = 'like';
+const moduleName = 'like'
 
 @ApiTags(moduleName)
 @Controller(moduleName)
@@ -32,22 +32,22 @@ export class LikeController {
   async getLikesByUser(
     @CurrentUser() user: User,
     @Query() filter: FilterParams,
-    @Query() pagination: PaginationParams,
+    @Query() pagination: PaginationParams
   ) {
-    return await this.likeService.getLikesByUser(user.id, filter, pagination);
+    return await this.likeService.getLikesByUser(user.id, filter, pagination)
   }
 
   @ApiOperation({
     summary: 'Get like by user and nftId',
-    description: 'forbidden',
+    description: 'forbidden'
   })
   @UseGuards(AccessTokenGuard)
   @Get(':nftId')
   async getLikeByUser(
     @Param('nftId') nftId: string,
-    @CurrentUser() user: User,
+    @CurrentUser() user: User
   ) {
-    return await this.likeService.getLikeByUser(user.id, nftId);
+    return await this.likeService.getLikeByUser(user.id, nftId)
   }
 
   @ApiOperation({ summary: 'Create new like', description: 'forbidden' })
@@ -56,15 +56,15 @@ export class LikeController {
   @Post()
   async createLike(
     @CurrentUser() user: User,
-    @Body() { nftId }: CreateLikeDto,
+    @Body() { nftId }: CreateLikeDto
   ) {
-    return await this.likeService.createLike(user.id, nftId);
+    return await this.likeService.createLike(user.id, nftId)
   }
 
   @ApiOperation({ summary: 'Delete like', description: 'forbidden' })
   @UseGuards(AccessTokenGuard)
   @Delete(':nftId')
   async deleteLike(@Param('nftId') nftId: string, @CurrentUser() user: User) {
-    return await this.likeService.deleteLike(nftId, user.id);
+    return await this.likeService.deleteLike(nftId, user.id)
   }
 }

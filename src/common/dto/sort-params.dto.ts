@@ -1,6 +1,6 @@
 // sort-params.dto.ts
 
-import { IsEnum, IsOptional, IsString } from 'class-validator';
+import { IsEnum, IsOptional, IsString } from 'class-validator'
 
 export enum CollectionSortByOption {
   PRICE = 'PRICE',
@@ -10,7 +10,7 @@ export enum CollectionSortByOption {
   LAST_SALE_DATE = 'LAST_SALE_DATE',
   CREATED_DATE = 'CREATED_DATE',
   FAVORITE_COUNT = 'FAVORITE_COUNT',
-  EXPIRATION_DATE = 'EXPIRATION_DATE',
+  EXPIRATION_DATE = 'EXPIRATION_DATE'
 }
 
 export enum StatsSortByOption {
@@ -20,18 +20,18 @@ export enum StatsSortByOption {
   SALES = 'SALES',
   ITEMS = 'ITEMS',
   LISTED = 'LISTED',
-  OWNERS = 'OWNERS',
+  OWNERS = 'OWNERS'
 }
 
 export class SortParams {
   @IsOptional()
   @IsString()
-  sortAscending?: string;
+  sortAscending?: string
 
   @IsOptional()
   @IsEnum([
     ...Object.values(CollectionSortByOption),
-    ...Object.values(StatsSortByOption),
+    ...Object.values(StatsSortByOption)
   ])
-  sortBy?: CollectionSortByOption | StatsSortByOption;
+  sortBy?: CollectionSortByOption | StatsSortByOption
 }

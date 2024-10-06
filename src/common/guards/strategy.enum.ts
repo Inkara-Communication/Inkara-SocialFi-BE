@@ -1,4 +1,4 @@
 export enum StrategyToken {
   JWT = 'jwt',
-  JWT_REFRESH = 'jwt-refresh',
+  JWT_REFRESH = 'jwt-refresh'
 }

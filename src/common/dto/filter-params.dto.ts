@@ -1,7 +1,7 @@
 // filter-params.dto.ts
 
-import { PeriodType } from '@prisma/client';
-import { IsEnum, IsOptional } from 'class-validator';
+import { PeriodType } from '@prisma/client'
+import { IsEnum, IsOptional } from 'class-validator'
 
 export enum UserFilterByOption {
   ERC721_NFTS = 'ERC721_NFTS',
@@ -12,15 +12,15 @@ export enum UserFilterByOption {
   HIDDEN = 'HIDDEN',
   LISTING = 'LISTING',
   BUY_OFFER = 'BUY_OFFER',
-  SELL_OFFER = 'SELL_OFFER',
+  SELL_OFFER = 'SELL_OFFER'
 }
 
 export class FilterParams {
   @IsOptional()
   @IsEnum(PeriodType)
-  period?: PeriodType;
+  period?: PeriodType
 
   @IsOptional()
   @IsEnum(UserFilterByOption)
-  filterBy?: UserFilterByOption;
+  filterBy?: UserFilterByOption
 }

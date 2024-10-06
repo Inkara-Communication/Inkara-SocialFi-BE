@@ -1,42 +1,42 @@
 // listing.dto.ts
 
-import { ApiProperty } from '@nestjs/swagger';
-import { Network } from '@prisma/client';
-import { IsString, IsEnum, IsNotEmpty } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger'
+import { Network } from '@prisma/client'
+import { IsString, IsEnum, IsNotEmpty } from 'class-validator'
 export class ListingDto {
   @ApiProperty({
     required: true,
     type: 'string',
-    description: 'Listing id',
+    description: 'Listing id'
   })
   @IsString()
   @IsNotEmpty()
-  id: string;
+  id: string
 
   @ApiProperty({
     required: true,
     type: 'string',
-    description: 'Nft id',
+    description: 'Nft id'
   })
   @IsString()
   @IsNotEmpty()
-  nftId: string;
+  nftId: string
 
   @ApiProperty({
     required: true,
     type: 'string',
-    description: 'Transaction Hash',
+    description: 'Transaction Hash'
   })
   @IsString()
   @IsNotEmpty()
-  txHash: string;
+  txHash: string
 
   @ApiProperty({
     required: true,
     type: 'string',
-    description: 'Network',
+    description: 'Network'
   })
   @IsEnum(Network)
   @IsNotEmpty()
-  network: Network;
+  network: Network
 }

@@ -1,14 +1,14 @@
 // profile.controller.ts
 
-import { Body, Controller, Get, Param, Patch, UseGuards } from '@nestjs/common';
-import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { CurrentUser, Public } from '@common/decorators';
-import { AccessTokenGuard } from '@common/guards';
-import { User } from '@prisma/client';
-import { UpdateProfileDto } from '../dto/update-profile.dto';
-import { ProfileService } from '../services';
+import { Body, Controller, Get, Param, Patch, UseGuards } from '@nestjs/common'
+import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger'
+import { CurrentUser, Public } from '@common/decorators'
+import { AccessTokenGuard } from '@common/guards'
+import { User } from '@prisma/client'
+import { UpdateProfileDto } from '../dto/update-profile.dto'
+import { ProfileService } from '../services'
 
-const moduleName = 'profile';
+const moduleName = 'profile'
 
 @ApiTags(moduleName)
 @Controller(moduleName)
@@ -21,9 +21,9 @@ export class ProfileController {
   @Patch()
   async updateProfile(
     @CurrentUser() user: User,
-    @Body() profileDto: UpdateProfileDto,
+    @Body() profileDto: UpdateProfileDto
   ) {
-    return this.profileService.updateProfile(user.id, profileDto);
+    return this.profileService.updateProfile(user.id, profileDto)
   }
 
   @ApiOperation({ summary: 'Get profile', description: 'forbidden' })
@@ -34,9 +34,9 @@ export class ProfileController {
       where: { userId: user.id },
       include: {
         avatar: true,
-        banner: true,
-      },
-    });
+        banner: true
+      }
+    })
   }
 
   @ApiOperation({ summary: 'Get profile by id' })
@@ -47,8 +47,8 @@ export class ProfileController {
       where: { userId },
       include: {
         avatar: true,
-        banner: true,
-      },
-    });
+        banner: true
+      }
+    })
   }
 }

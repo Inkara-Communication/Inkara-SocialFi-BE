@@ -1,6 +1,4 @@
-import Prisma from '@prisma/client';
-
 export interface IPayloadUserJwt {
-  id: string;
-  walletAddress: string;
+  id: string
+  walletAddress: string
 }

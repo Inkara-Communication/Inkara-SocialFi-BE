@@ -7,19 +7,18 @@ import {
   Param,
   Post,
   Query,
-  UseGuards,
-} from '@nestjs/common';
-import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { CurrentUser, Public } from '@common/decorators';
-import { AccessTokenGuard } from '@common/guards';
-import { ListingStatus, User } from '@prisma/client';
-import { CreateListingDto } from '../dto/create-listing.dto';
-import { ListingService } from '../services/listing.service';
-import { ListingDto } from '../dto/listing.dto';
-import { FilterParams } from '@common/dto/filter-params.dto';
-import { PaginationParams } from '@common/dto/pagenation-params.dto';
+  UseGuards
+} from '@nestjs/common'
+import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger'
+import { CurrentUser, Public } from '@common/decorators'
+import { AccessTokenGuard } from '@common/guards'
+import { ListingStatus, User } from '@prisma/client'
+import { CreateListingDto } from '../dto/create-listing.dto'
+import { ListingService } from '../services/listing.service'
+import { ListingDto } from '../dto/listing.dto'
+import { PaginationParams } from '@common/dto/pagenation-params.dto'
 
-const moduleName = 'listing';
+const moduleName = 'listing'
 
 @ApiTags(moduleName)
 @Controller(moduleName)
@@ -36,11 +35,11 @@ export class ListingController {
         seller: true,
         nft: {
           include: {
-            owner: true,
-          },
-        },
-      },
-    });
+            owner: true
+          }
+        }
+      }
+    })
   }
 
   @ApiOperation({ summary: 'Get listings by user', description: 'forbidden' })
@@ -48,12 +47,9 @@ export class ListingController {
   @Get('user')
   async getUserListings(
     @CurrentUser() user: User,
-    @Query() pagination: PaginationParams,
+    @Query() pagination: PaginationParams
   ) {
-    return await this.listingService.getLisitingsByUser(
-      user.id,
-      pagination,
-    );
+    return await this.listingService.getLisitingsByUser(user.id, pagination)
   }
 
   @ApiOperation({ summary: 'Get listing by nft id', description: 'public' })
@@ -61,8 +57,8 @@ export class ListingController {
   @Get('nft/:id')
   async getListingsByNftId(@Param('id') id: string) {
     return this.listingService.getListing({
-      where: { nftId: id, status: ListingStatus.ACTIVE },
-    });
+      where: { nftId: id, status: ListingStatus.ACTIVE }
+    })
   }
 
   @ApiOperation({ summary: 'Get listing by id' })
@@ -70,8 +66,8 @@ export class ListingController {
   @Get(':id')
   async getListingById(@Param('id') id: string) {
     return this.listingService.getListing({
-      where: { id, status: ListingStatus.ACTIVE },
-    });
+      where: { id, status: ListingStatus.ACTIVE }
+    })
   }
 
   @ApiOperation({ summary: 'List nft', description: 'forbidden' })
@@ -80,9 +76,9 @@ export class ListingController {
   @Post()
   async createListing(
     @CurrentUser() user: User,
-    @Body() data: CreateListingDto,
+    @Body() data: CreateListingDto
   ) {
-    return this.listingService.createListing(user.id, data);
+    return this.listingService.createListing(user.id, data)
   }
 
   @ApiOperation({ summary: 'Cancel nft', description: 'forbidden' })
@@ -90,7 +86,7 @@ export class ListingController {
   @UseGuards(AccessTokenGuard)
   @Post('cancel')
   async cancelListing(@CurrentUser() user: User, @Body() data: ListingDto) {
-    return this.listingService.cancelListing(user.id, data);
+    return this.listingService.cancelListing(user.id, data)
   }
 
   @ApiOperation({ summary: 'Buy nft', description: 'forbidden' })
@@ -98,6 +94,6 @@ export class ListingController {
   @UseGuards(AccessTokenGuard)
   @Post('buy')
   async buyListing(@CurrentUser() user: User, @Body() data: ListingDto) {
-    return this.listingService.buyListing(user.id, data);
+    return this.listingService.buyListing(user.id, data)
   }
 }
