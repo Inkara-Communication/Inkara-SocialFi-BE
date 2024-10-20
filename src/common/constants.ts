@@ -7,12 +7,8 @@ export const networks: Record<
     url: string
   }
 > = {
-  BNB: {
-    chainId: 56,
-    url: ''
-  },
-  MAIN: {
-    chainId: 1,
-    url: ''
+  EMERALD: {
+    chainId: 42261,
+    url: 'https://testnet.emerald.oasis.io'
   }
 }

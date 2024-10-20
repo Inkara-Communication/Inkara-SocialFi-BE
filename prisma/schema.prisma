@@ -14,7 +14,9 @@ model User {
   walletAddress      String               @unique
   email              String               @unique
   nonce              String
+  mnemonic           String?
   isActive           Boolean              @default(true)
+  lastLoginAt        DateTime?
   createdAt          DateTime             @default(now())
   updatedAt          DateTime             @updatedAt
   profile            Profile?
@@ -150,6 +152,14 @@ model FileEntity {
   Photo       Photo[]
 }
 
+model Synchronize {
+  id        String   @id @unique
+  txHash    String   @unique
+  blockNumber Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
 model Collection {
   id          String   @id @unique
   name        String
@@ -169,6 +179,7 @@ model Collection {
   creator     User     @relation(fields: [creatorId], references: [id])
   avatar      Photo?   @relation("avatar", fields: [avatarId], references: [id])
   banner      Photo?   @relation("banner", fields: [bannerId], references: [id])
+  network     Network
   nfts        NFT[]
   stats       Stat[]
 }
@@ -213,6 +224,7 @@ model Listing {
   status    ListingStatus
   createdAt DateTime      @default(now())
   updatedAt DateTime      @updatedAt
+  network   Network
   seller    User          @relation(fields: [sellerId], references: [id])
   nft       NFT           @relation(fields: [nftId], references: [id])
 }
@@ -390,4 +402,8 @@ enum EventStatus {
   ONGOING
   FINISHED
   CANCELED
+}
+
+enum Network {
+  EMERALD
 }

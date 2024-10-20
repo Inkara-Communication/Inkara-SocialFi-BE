@@ -14,7 +14,7 @@ import {
   MINTNFT_EVENT_ABI,
   ORDERFULFILLED_EVENT_ABI
 } from '@config/abi'
-import { INKUBATE_ADDRESS, LAUNCHPAD_ADDRESS } from '@config/address'
+import { INKUBATE_ADDRESS } from '@config/address'
 import { BuyOrderParameters, OrderParameters, TokenData } from '@common/types'
 import { DeployLaunchpadDto } from '@modules/launchpad/dto/deploy-launchpad.dto'
 import { ListingDto } from '@modules/listing/dto/listing.dto'
@@ -39,34 +39,24 @@ export class Web3Service {
     ).toString('base64')
 
     this.web3 = {
-      BNB: new Web3(configService.get('BNB')),
-      MAIN: new Web3(
-        `${this.configService.get('urls.INFURA_URL')}${this.configService.get(
-          'urls.INFURA_API_KEY'
-        )}`
-      )
+      EMERALD: new Web3(configService.get('EMERALD'))
     }
 
     this.account = {
-      MAIN: this.web3.MAIN.eth.accounts.privateKeyToAccount(
-        `0x${this.configService.get('credential.ACCOUNT_PRIVATE_KEY')}`
-      ),
-      BNB: this.web3.BNB.eth.accounts.privateKeyToAccount(
+      EMERALD: this.web3.EMERALD.eth.accounts.privateKeyToAccount(
         `0x${this.configService.get('credential.ACCOUNT_PRIVATE_KEY')}`
       )
     }
 
     this.inkubateContract = {
-      MAIN: new this.web3.MAIN.eth.Contract(INKUBATE_ABI, INKUBATE_ADDRESS),
-      BNB: new this.web3.BNB.eth.Contract(INKUBATE_ABI, INKUBATE_ADDRESS)
+      EMERALD: new this.web3.EMERALD.eth.Contract(
+        INKUBATE_ABI,
+        INKUBATE_ADDRESS
+      )
     }
-
-    this.launchpadContract = {
-      MAIN: new this.web3.MAIN.eth.Contract(LAUNCHPAD_ABI, LAUNCHPAD_ADDRESS),
-      BNB: new this.web3.BNB.eth.Contract(LAUNCHPAD_ABI, LAUNCHPAD_ADDRESS)
-    }
-
-    this.launchpadContract.MAIN.setProvider(this.web3.MAIN.currentProvider)
+    this.launchpadContract.EMERALD.setProvider(
+      this.web3.EMERALD.currentProvider
+    )
   }
 
   async getBalance(network: Network, address: string): Promise<bigint> {
@@ -151,7 +141,7 @@ export class Web3Service {
     try {
       const txObj = {
         from: this.account[network].address,
-        to: this.launchpadContract.MAIN.options.address,
+        to: this.launchpadContract.EMERALD.options.address,
         data: txData
       }
 
@@ -283,7 +273,7 @@ export class Web3Service {
       )
       tokenDatas = await Promise.all(
         tokenIds.map(async tokenId => {
-          const contract = new this.web3.MAIN.eth.Contract(
+          const contract = new this.web3.EMERALD.eth.Contract(
             ERC721A_ABI,
             tokenAddress
           )
