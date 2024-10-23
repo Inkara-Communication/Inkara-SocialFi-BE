@@ -22,7 +22,7 @@ export class FileUploadService {
       key: upload.Key,
       mimeType: file.mimetype,
       size: file.size,
-      path: upload.Location,
+      s3Path: upload.Location,
       description: ''
     }
     return await this.prismaService.fileEntity.create({

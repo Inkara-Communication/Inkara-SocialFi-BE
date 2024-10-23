@@ -1,7 +1,7 @@
 export const config = {
   application: {
     PORT: Number(process.env.PORT),
-    BCRYPT_SALT: Number(process.env.PORT),
+    BCRYPT_SALT: Number(process.env.BCRYPT_SALT),
     HOST: process.env.HOST,
     ENV: 'production',
     isProd: true,

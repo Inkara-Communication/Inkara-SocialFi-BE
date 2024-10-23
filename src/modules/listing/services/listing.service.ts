@@ -141,7 +141,8 @@ export class ListingService {
   }
 
   async cancelListing(userId: string, data: ListingDto) {
-    const order = await this.web3Service.cancelListing(data)
+    // const order = await this.web3Service.cancelListing(data)
+    const order = null
     if (order.error !== '') {
       this.logger.error(order.error)
       throw new HttpException(order.error, HttpStatus.BAD_REQUEST)
@@ -193,7 +194,8 @@ export class ListingService {
   }
 
   async buyListing(userId: string, data: ListingDto) {
-    const result = await this.web3Service.buyListing(data)
+    // const result = await this.web3Service.buyListing(data)
+    const result = null
     if (result.error !== '') {
       this.logger.error(result.error)
       throw new HttpException(result.error, HttpStatus.BAD_REQUEST)

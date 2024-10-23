@@ -100,8 +100,8 @@ async function bootstrap() {
   )
 
   const options = new DocumentBuilder()
-    .setTitle('Inkubate')
-    .setDescription('nft marketplace api on ethereum')
+    .setTitle('Inkara-be')
+    .setDescription('inkara-be api')
     .setVersion('1.0')
     .build()
 

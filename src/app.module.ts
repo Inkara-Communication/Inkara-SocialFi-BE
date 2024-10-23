@@ -7,7 +7,6 @@ import { InkRequestMiddleware } from '@common/middleware/ink-request.middleware'
 import { ActivityModule } from '@modules/activity'
 import { AuthModule } from '@modules/auth'
 import { CollectionModule } from '@modules/collection'
-import { LaunchpadModule } from '@modules/launchpad'
 import { ListingModule } from '@modules/listing'
 import { UserModule } from '@modules/user'
 import { OfferModule } from '@modules/offer'
@@ -32,7 +31,6 @@ import { HideModule } from '@modules/hide'
     CollectionModule,
     CommonModule,
     HealthModule,
-    LaunchpadModule,
     ListingModule,
     NftModule,
     NotificationModule,

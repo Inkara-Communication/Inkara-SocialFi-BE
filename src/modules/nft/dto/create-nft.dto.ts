@@ -1,8 +1,8 @@
 // create-nft.dto.ts
 
 import { ApiProperty } from '@nestjs/swagger'
-import { ContractType, Network } from '@prisma/client'
-import { IsNotEmpty, IsString } from 'class-validator'
+import { Network, NftType } from '@prisma/client'
+import { IsNotEmpty, IsNumber, IsString } from 'class-validator'
 
 export class CreateNftDto {
   @ApiProperty({
@@ -17,12 +17,12 @@ export class CreateNftDto {
   @ApiProperty({
     required: true,
     type: 'string',
-    description: 'Contract type'
+    description: 'Nft type'
   })
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  contractType: ContractType
+  nftType: NftType
 
   @ApiProperty({
     required: true,
@@ -32,6 +32,15 @@ export class CreateNftDto {
   @IsString()
   @IsNotEmpty()
   price: bigint
+
+  @ApiProperty({
+    required: true,
+    description: 'Royalty'
+  })
+  @ApiProperty()
+  @IsNumber()
+  @IsNotEmpty()
+  royalty: number
 
   @ApiProperty({
     required: true,

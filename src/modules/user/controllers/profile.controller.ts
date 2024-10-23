@@ -33,8 +33,7 @@ export class ProfileController {
     return this.profileService.getProfile({
       where: { userId: user.id },
       include: {
-        avatar: true,
-        banner: true
+        avatar: true
       }
     })
   }
@@ -46,8 +45,7 @@ export class ProfileController {
     return this.profileService.getProfile({
       where: { userId },
       include: {
-        avatar: true,
-        banner: true
+        avatar: true
       }
     })
   }

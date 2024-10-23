@@ -29,7 +29,7 @@ export class ProfileService {
         where: { userId: userId },
         data: {
           ...profileDto,
-          offerToken: OfferToken.ETH, // Need to add BNB for multichain
+          offerToken: OfferToken.INKARA,
           minOfferThreshold: profileDto.minOfferThreshold
             ? profileDto.minOfferThreshold.toString()
             : undefined
@@ -40,7 +40,7 @@ export class ProfileService {
         data: {
           ...profileDto,
           id: this.generatorService.uuid(),
-          offerToken: OfferToken.ETH, // Need to add BNB for multichain
+          offerToken: OfferToken.INKARA,
           minOfferThreshold: profileDto.minOfferThreshold
             ? profileDto.minOfferThreshold.toString()
             : undefined,

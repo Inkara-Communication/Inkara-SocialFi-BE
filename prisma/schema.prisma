@@ -12,7 +12,7 @@ model User {
   id                 String               @id @unique
   username           String               @unique
   walletAddress      String               @unique
-  email              String               @unique
+  email              String?
   nonce              String
   mnemonic           String?
   isActive           Boolean              @default(true)
@@ -144,6 +144,7 @@ model FileEntity {
   fileName    String
   s3Path      String?
   ipfsPath    String?
+  key         String
   mimeType    String
   size        Int
   description String
@@ -196,6 +197,7 @@ model NFT {
   image        String
   attributes   Json
   royalty      Int // permyriad value
+  nftType      NftType
   NftStatus    NftStatus
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
@@ -343,6 +345,11 @@ model EventParticipation {
   nft   NFT?  @relation(fields: [nftId], references: [id])
 }
 
+enum NftType {
+  ERC4671
+  ERC721
+}
+
 enum ActivityType {
   MINTED
   LISTED
@@ -367,7 +374,7 @@ enum NotificationType {
 }
 
 enum OfferToken {
-  OASIS
+  ROSE
   INKARA
 }
 

@@ -52,21 +52,25 @@ export class AuthService {
     this.tokenService.verifyWallet(walletAddress)
 
     const nonce = this.generatorService.generateRandomNonce()
-    const users = await this.prismaService.user.findMany({
-      where: {
-        walletAddress
+
+    try {
+      const user = await this.prismaService.user.findUniqueOrThrow({
+        where: { walletAddress }
+      })
+
+      if (user) {
+        await this.prismaService.user.update({
+          where: { walletAddress },
+          data: { nonce }
+        })
+      } else {
+        await this.userService.createUser({
+          nonce: nonce,
+          walletAddress: walletAddress
+        })
       }
-    })
-    if (users.length > 0) {
-      await this.prismaService.user.update({
-        where: { walletAddress },
-        data: { nonce }
-      })
-    } else {
-      await this.userService.createUser({
-        nonce: nonce,
-        walletAddress: walletAddress
-      })
+    } catch (error) {
+      throw new InternalServerErrorException(error)
     }
 
     return nonce

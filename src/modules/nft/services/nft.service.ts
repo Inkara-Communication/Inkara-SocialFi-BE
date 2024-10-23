@@ -4,9 +4,9 @@ import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common'
 import { PrismaService } from '@prisma/prisma.service'
 import {
   ActivityType,
-  ContractType,
   ListingStatus,
   NFT,
+  NftStatus,
   Prisma
 } from '@prisma/client'
 
@@ -526,19 +526,7 @@ export class NftService {
         return await this.prismaService.nFT.findMany({
           where: {
             ...commonWhere,
-            ownerId: userId,
-            contractType: ContractType.ERC721
-          },
-          skip: offset * startId,
-          take: limit,
-          ...args
-        })
-      case UserFilterByOption.ERC1155_NFTS:
-        return await this.prismaService.nFT.findMany({
-          where: {
-            ...commonWhere,
-            ownerId: userId,
-            contractType: ContractType.ERC1155
+            ownerId: userId
           },
           skip: offset * startId,
           take: limit,
@@ -570,21 +558,8 @@ export class NftService {
       )
     }
 
-    const launchpad = await this.prismaService.launchpad.findUnique({
-      where: {
-        id: collection.launchpadId
-      }
-    })
-    if (!collection) {
-      throw new HttpException(
-        'Invalid launchpad collection id',
-        HttpStatus.EXPECTATION_FAILED
-      )
-    }
-
     const result = await this.web3Service.mintNft({
-      ...data,
-      prefix: launchpad.prefix
+      ...data
     })
     if (result.error !== '') {
       this.logger.error(result.error)
@@ -598,7 +573,7 @@ export class NftService {
             await this.prismaService.nFT.create({
               data: {
                 id: this.generatorService.uuid(),
-                collectionId: undefined,
+                collectionId: data.collectionId,
                 creatorId: undefined,
                 tokenAddress: tokenData.tokenAddress,
                 tokenId: tokenData.tokenId,
@@ -607,8 +582,9 @@ export class NftService {
                 image: tokenData.metadata.image,
                 attributes: tokenData.metadata
                   .attributes as Prisma.InputJsonValue,
-                royalty: 0,
-                contractType: data.contractType,
+                royalty: data.royalty || 0,
+                NftStatus: NftStatus.HOLD,
+                nftType: data.nftType,
                 collection: {
                   connect: {
                     id: data.collectionId

@@ -17,7 +17,7 @@ export class FileService {
     return await this.prismaService.photo.create({
       data: {
         id: this.generatorService.uuid(),
-        url: uploaded.path,
+        url: uploaded.s3Path,
         fileEntityId: uploaded.id
       }
     })
@@ -34,7 +34,7 @@ export class FileService {
       return await this.prismaService.photo.update({
         where: { id: photoId },
         data: {
-          url: uploaded.path,
+          url: uploaded.s3Path,
           fileEntityId: uploaded.id
         }
       })
@@ -42,7 +42,7 @@ export class FileService {
       return await this.prismaService.photo.create({
         data: {
           id: this.generatorService.uuid(),
-          url: uploaded.path,
+          url: uploaded.s3Path,
           fileEntityId: uploaded.id
         }
       })

@@ -209,7 +209,8 @@ export class OfferService {
     if (userId !== offer.sellerId)
       throw new HttpException('Invalid seller', HttpStatus.EXPECTATION_FAILED)
 
-    const result = await this.web3Service.acceptOffer(data)
+    // const result = await this.web3Service.acceptOffer(data)
+    const result = null
     if (result.error !== '') {
       this.logger.error(result.error)
       throw new HttpException(result.error, HttpStatus.EXPECTATION_FAILED)

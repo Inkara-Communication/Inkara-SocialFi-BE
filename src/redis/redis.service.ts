@@ -15,13 +15,13 @@ export class RedisService {
     //   ? new Redis(redisOpts.REDIS_URL, {
     //       tls: {
     //         rejectUnauthorized: false,
-    //         requestCert: true,
-    //       },
+    //         requestCert: true
+    //       }
     //     })
     //   : new Redis({
     //       host: redisOpts.REDIS_HOST,
-    //       port: redisOpts.REDIS_PORT,
-    //     });
+    //       port: redisOpts.REDIS_PORT
+    //     })
     this._redisClient = new Redis(6379, 'localhost', { password: 'pass' })
     this._redisClient.on('ready', () => {
       _logger.log(`redis client is ready: ${this._redisClient.status}`)
