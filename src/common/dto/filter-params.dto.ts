@@ -5,7 +5,7 @@ import { IsEnum, IsOptional } from 'class-validator'
 
 export enum UserFilterByOption {
   ERC721_NFTS = 'ERC721_NFTS',
-  ERC1155_NFTS = 'ERC1155_NFTS',
+  ERC4671_NFTS = 'ERC4671_NFTS',
   CREATED = 'CREATED',
   ACTIVITY = 'ACTIVITY',
   FAVORITE = 'FAVORITE',

@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common'
 import { nanoid } from 'nanoid'
+import { ethers } from 'ethers'
 
 @Injectable()
 export class GeneratorService {
@@ -9,28 +10,16 @@ export class GeneratorService {
   public createRefreshTokenId(): string {
     return this.uuid()
   }
-  public fileName(ext: string): string {
-    return this.uuid() + '.' + ext
+  public fileName(imageBuffer: string): string {
+    return ethers.utils.keccak256(imageBuffer)
   }
 
   public generateVerificationCode(): string {
     return Math.floor(1000 + Math.random() * 9000).toString()
   }
 
-  public generatePassword(): string {
-    const lowercase = 'abcdefghijklmnopqrstuvwxyz'
-    const uppercase = lowercase.toUpperCase()
-    const numbers = '0123456789'
-
-    let text = ''
-
-    for (let i = 0; i < 4; i++) {
-      text += uppercase.charAt(Math.floor(Math.random() * uppercase.length))
-      text += lowercase.charAt(Math.floor(Math.random() * lowercase.length))
-      text += numbers.charAt(Math.floor(Math.random() * numbers.length))
-    }
-
-    return text
+  public generateSlug(token_id: string): string {
+    return `${ethers.utils.hashMessage(token_id).slice(2, 16)}`.toLowerCase()
   }
 
   /**
@@ -38,10 +27,10 @@ export class GeneratorService {
    * @param length
    */
   public generateRandomString(length = 6): string {
-    return Math.random()
-      .toString(36)
-      .replace(/[^\dA-Za-z]+/g, '')
-      .slice(0, Math.max(0, length))
+    return ethers.utils
+      .hexlify(ethers.utils.randomBytes(length))
+      .substring(0, length)
+      .toUpperCase()
   }
   /**
    * generate random nonce
@@ -49,15 +38,10 @@ export class GeneratorService {
    * @param length
    */
   public generateRandomNonce(length = 6): string {
-    const characters =
-      'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
-    let nonce = ''
-
-    for (let i = nonce.length; i < length; i++) {
-      const randomIndex = Math.floor(Math.random() * characters.length)
-      nonce += characters.charAt(randomIndex)
-    }
-
-    return nonce.toUpperCase()
+    const randomValue = ethers.utils.randomBytes(32)
+    return ethers.utils
+      .keccak256(randomValue)
+      .substring(0, length)
+      .toUpperCase()
   }
 }

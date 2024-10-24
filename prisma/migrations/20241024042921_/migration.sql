@@ -1,14 +1,14 @@
 -- CreateEnum
+CREATE TYPE "NftType" AS ENUM ('ERC4671', 'ERC721');
+
+-- CreateEnum
 CREATE TYPE "ActivityType" AS ENUM ('MINTED', 'LISTED', 'UNLISTED', 'CHANGE_PRICE', 'SOLD', 'CREATED_OFFER', 'CHANGE_OFFER', 'CANCELED_OFFER', 'ACCPETED_OFFER');
 
 -- CreateEnum
 CREATE TYPE "NotificationType" AS ENUM ('SOLD', 'NEW_OFFER', 'OFFER_ACCEPTED', 'OFFER_REJECTED', 'LIKE', 'COMMENT', 'FOLLOW', 'MENTION');
 
 -- CreateEnum
-CREATE TYPE "OfferToken" AS ENUM ('OASIS', 'INKARA');
-
--- CreateEnum
-CREATE TYPE "Network" AS ENUM ('EMERALD');
+CREATE TYPE "OfferToken" AS ENUM ('ROSE', 'INKARA');
 
 -- CreateEnum
 CREATE TYPE "ListingStatus" AS ENUM ('ACTIVE', 'SOLD', 'INACTIVE');
@@ -25,12 +25,15 @@ CREATE TYPE "PeriodType" AS ENUM ('HOUR', 'SIX_HOURS', 'DAY', 'WEEK', 'ALL');
 -- CreateEnum
 CREATE TYPE "EventStatus" AS ENUM ('ONGOING', 'FINISHED', 'CANCELED');
 
+-- CreateEnum
+CREATE TYPE "Network" AS ENUM ('EMERALD');
+
 -- CreateTable
 CREATE TABLE "User" (
     "id" TEXT NOT NULL,
     "username" TEXT NOT NULL,
     "walletAddress" TEXT NOT NULL,
-    "email" TEXT NOT NULL,
+    "email" TEXT,
     "nonce" TEXT NOT NULL,
     "mnemonic" TEXT,
     "isActive" BOOLEAN NOT NULL DEFAULT true,
@@ -148,6 +151,7 @@ CREATE TABLE "FileEntity" (
     "fileName" TEXT NOT NULL,
     "s3Path" TEXT,
     "ipfsPath" TEXT,
+    "key" TEXT NOT NULL,
     "mimeType" TEXT NOT NULL,
     "size" INTEGER NOT NULL,
     "description" TEXT NOT NULL,
@@ -185,6 +189,7 @@ CREATE TABLE "Collection" (
     "feature" BOOLEAN NOT NULL DEFAULT false,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
+    "network" "Network" NOT NULL,
 
     CONSTRAINT "Collection_pkey" PRIMARY KEY ("id")
 );
@@ -202,6 +207,7 @@ CREATE TABLE "NFT" (
     "image" TEXT NOT NULL,
     "attributes" JSONB NOT NULL,
     "royalty" INTEGER NOT NULL,
+    "nftType" "NftType" NOT NULL,
     "NftStatus" "NftStatus" NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
@@ -222,6 +228,7 @@ CREATE TABLE "Listing" (
     "status" "ListingStatus" NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
+    "network" "Network" NOT NULL,
 
     CONSTRAINT "Listing_pkey" PRIMARY KEY ("id")
 );
@@ -358,9 +365,6 @@ CREATE UNIQUE INDEX "User_username_key" ON "User"("username");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "User_walletAddress_key" ON "User"("walletAddress");
-
--- CreateIndex
-CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Session_id_key" ON "Session"("id");
