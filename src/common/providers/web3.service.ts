@@ -22,6 +22,10 @@ import {
   // OrderParameters,
   TokenData
 } from '@common/types'
+import * as bip39 from 'bip39'
+import { hdkey } from 'ethereumjs-wallet'
+import assert from 'assert'
+import CryptoJS from 'crypto-js'
 // import { ListingDto } from '@modules/listing/dto/listing.dto'
 // import { AcceptOfferDto } from '@modules/offer/dto/accept-offer.dto'
 
@@ -88,6 +92,22 @@ export class Web3Service {
 
   async getTransactionReceipt(network: Network, transactionHash: string) {
     return await this.web3[network].eth.getTransactionReceipt(transactionHash)
+  }
+
+  public async getPrivateIndex(mnemonic: string, index: number) {
+    const decryptedBytes = CryptoJS.AES.decrypt(mnemonic, '')
+    const decryptedMnemonic = decryptedBytes.toString(CryptoJS.enc.Utf8)
+    assert(bip39.validateMnemonic(decryptedMnemonic), 'Invalid mnemonic')
+
+    const wallet_hdpath = "m/44'/60'/0'/0/"
+    const seed = await bip39.mnemonicToSeed(mnemonic)
+    const hdwallet = hdkey.fromMasterSeed(seed)
+    const wallet = this.web3.EMERALD.eth.accounts.wallet.create(0)
+    const baseWallet = hdwallet.derivePath(wallet_hdpath + index).getWallet()
+    const privateKey = baseWallet.getPrivateKey().toString('hex')
+    wallet.clear()
+    wallet.add(privateKey)
+    return privateKey
   }
 
   async mintNft({ network, txHash }: { network: Network; txHash: string }) {
