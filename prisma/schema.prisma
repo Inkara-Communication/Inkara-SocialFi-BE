@@ -28,7 +28,8 @@ model User {
   ownedNFTs          NFT[]                @relation("owner")
   createdNFTs        NFT[]                @relation("minter")
   hides              Hide[]
-  likes              Like[]
+  likes              PostLike[]
+  nftLikes           NftLike[]
   listings           Listing[]
   offers             Offer[]              @relation("seller")
   boughtOffers       Offer[]              @relation("buyer")
@@ -40,6 +41,10 @@ model User {
   sentMessages       Message[]            @relation("SentMessages")
   receivedMessages   Message[]            @relation("ReceivedMessages")
   EventParticipation EventParticipation[]
+
+  @@index([username])
+  @@index([walletAddress])
+  @@index([email])
 }
 
 model Session {
@@ -92,10 +97,20 @@ model Post {
   updatedAt DateTime  @updatedAt
   user      User      @relation(fields: [userId], references: [id])
   comments  Comment[]
-  likes     Like[]
+  likes     PostLike[]
 }
 
-model Like {
+model PostLike {
+  id        String   @id @unique
+  postId    String
+  userId    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id])
+  post      Post     @relation(fields: [postId], references: [id])
+}
+
+model NftLike {
   id        String   @id @unique
   nftId     String
   userId    String
@@ -103,8 +118,6 @@ model Like {
   updatedAt DateTime @updatedAt
   user      User     @relation(fields: [userId], references: [id])
   nft       NFT      @relation(fields: [nftId], references: [id])
-
-  Post Post[]
 }
 
 model Comment {
@@ -129,7 +142,7 @@ model Follow {
 }
 
 model Message {
-  id         String   @id @unique @default(uuid())
+  id         String   @id @unique
   senderId   String
   receiverId String
   content    String
@@ -197,6 +210,7 @@ model NFT {
   image        String
   attributes   Json
   royalty      Int // permyriad value
+  slug         String?
   nftType      NftType
   NftStatus    NftStatus
   createdAt    DateTime   @default(now())
@@ -208,10 +222,14 @@ model NFT {
   minter       User       @relation("minter", fields: [minterId], references: [id])
   activities   Activity[]
   hides        Hide[]
-  likes        Like[]
+  likes        NftLike[]
   event        Event[]
 
   EventParticipation EventParticipation[]
+
+  @@index([ownerId])
+  @@index([minterId])
+  @@index([collectionId])
 }
 
 model Listing {
@@ -320,7 +338,7 @@ model Reward {
 }
 
 model Event {
-  id           String               @id @unique @default(uuid())
+  id           String               @id @unique
   title        String
   description  String?
   status       EventStatus?
@@ -334,7 +352,7 @@ model Event {
 }
 
 model EventParticipation {
-  id        String   @id @unique @default(uuid())
+  id        String   @id @unique
   eventId   String
   userId    String
   nftId     String? // NFT submitted for voting

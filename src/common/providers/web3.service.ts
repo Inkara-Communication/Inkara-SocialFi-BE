@@ -28,7 +28,6 @@ import {
 @Injectable()
 export class Web3Service {
   private logger = new Logger(Web3Service.name)
-  private readonly infuraCred: string
   private readonly web3: Record<Network, Web3>
   private account: Record<Network, Web3Account>
   private inkaraTokenContract: Record<
@@ -47,14 +46,8 @@ export class Web3Service {
     private readonly configService: ConfigService,
     private readonly httpService: HttpService
   ) {
-    this.infuraCred = Buffer.from(
-      `${this.configService.get(
-        'urls.INFURA_API_KEY'
-      )}:${this.configService.get('urls.INFURA_SECRET')}`
-    ).toString('base64')
-
     this.web3 = {
-      EMERALD: new Web3(configService.get('EMERALD'))
+      EMERALD: new Web3(this.configService.get('blockchain.EMERALD'))
     }
 
     this.account = {

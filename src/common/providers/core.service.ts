@@ -68,15 +68,9 @@ export class CoreService {
       return prefix + image.slice(7)
     } else if (image.indexOf('https://ipfs.io/ipfs/') === 0) {
       return prefix + image.slice(21)
-    } else if (image.indexOf('https://ipfs.infura.io/ipfs/') === 0) {
-      return prefix + image.slice(28)
-    } else if (image.indexOf('https://infura-ipfs.io/ipfs/') === 0) {
-      return prefix + image.slice(28)
     } else if (image.indexOf('pinata.cloud/ipfs/') !== -1) {
       const index = image.indexOf('pinata.cloud/ipfs/')
       return prefix + image.slice(index + 18)
-    } else if (image.indexOf('ar://') === 0) {
-      return 'https://arweave.net/' + image.slice(5)
     } else {
       return image
     }

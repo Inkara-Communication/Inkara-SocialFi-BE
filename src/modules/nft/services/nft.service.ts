@@ -578,6 +578,7 @@ export class NftService {
                 tokenAddress: tokenData.tokenAddress,
                 tokenId: tokenData.tokenId,
                 tokenUri: tokenData.tokenUri,
+                slug: this.generatorService.generateSlug(tokenData.tokenId),
                 name: tokenData.metadata.name,
                 image: tokenData.metadata.image,
                 attributes: tokenData.metadata

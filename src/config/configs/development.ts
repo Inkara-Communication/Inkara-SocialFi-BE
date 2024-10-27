@@ -41,9 +41,11 @@ export const config = {
     AWS_S3_API_VERSION: process.env.AWS_S3_API_VERSION
   },
 
-  urls: {
-    infura_url: process.env.INFURA_URL,
-    infura_api_key: process.env.INFURA_API_KEY,
-    infura_secret: process.env.INFURA_SECRET
+  credential: {
+    ACCOUNT_PRIVATE_KEY: process.env.ACCOUNT_PRIVATE_KEY
+  },
+
+  blockchain: {
+    EMERALD: process.env.EMERALD_RPC_URL
   }
 }

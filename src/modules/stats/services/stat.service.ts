@@ -33,7 +33,7 @@ export class StatService {
           const ownerIdSet = new Set()
           let floorPrice = BigInt(0)
           let volume = BigInt(0)
-
+          let averagePrice = BigInt(0)
           const nfts = await this.prismaService.nFT.findMany({
             where: { collectionId: collection.id }
           })
@@ -71,6 +71,11 @@ export class StatService {
               volume
             )
 
+            averagePrice =
+              soldActivities.length > 0
+                ? volume / BigInt(soldActivities.length)
+                : BigInt(0)
+
             const existingStat = await this.prismaService.stat.findFirst({
               where: {
                 collectionId: collection.id,
@@ -83,7 +88,8 @@ export class StatService {
               listedItems: listingActivities.length,
               salesItems: soldActivities.length,
               floorPrice,
-              volume
+              volume,
+              averagePrice
             }
 
             if (existingStat) {
@@ -124,7 +130,7 @@ export class StatService {
 
       this.logger.log('Stats update complete')
     } catch (e) {
-      this.logger.error(e)
+      this.logger.error('Error updating stats: ', e.message, e.stack)
     }
   }
 
