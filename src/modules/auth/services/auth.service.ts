@@ -11,7 +11,7 @@ import {
 import { ConfigService } from '@nestjs/config'
 import { JwtService } from '@nestjs/jwt'
 import { IPayloadUserJwt } from '@common/interfaces'
-import { GeneratorService } from '@common/providers'
+import { GeneratorService, Web3Service } from '@common/providers'
 import { UserService } from '@modules/user/services/user.service'
 import { PrismaService } from '@prisma/prisma.service'
 import { RedisE } from '@redis/redis.enum'
@@ -19,7 +19,15 @@ import { RedisService } from '@redis/redis.service'
 import { ForbiddenException, NotFoundException } from '../../../errors'
 import { SigninDto } from '../dto/signin.dto'
 import { TokenService } from './token.service'
-import { SignupDto } from '../dto/signup.dto'
+import {
+  ListAddressIndexInput,
+  VerifyGoogleInput
+} from '@modules/auth/dto/signin-google.dto'
+import { ethers } from 'ethers'
+import assert from 'assert'
+import * as bip39 from 'bip39'
+import CryptoJS from 'crypto-js'
+import { OAuth2Client, type TokenPayload } from 'google-auth-library'
 
 @Injectable()
 export class AuthService {
@@ -31,7 +39,8 @@ export class AuthService {
     private tokenService: TokenService,
     private configService: ConfigService,
     private redisService: RedisService,
-    private generatorService: GeneratorService
+    private generatorService: GeneratorService,
+    private readonly web3Service: Web3Service
   ) {}
 
   async validateUser({ walletAddress }: SigninDto): Promise<boolean> {
@@ -44,36 +53,92 @@ export class AuthService {
     return true
   }
 
-  public async signUp({ walletAddress }: SignupDto) {
-    this.logger.log(
-      `${'*'.repeat(20)} signUp(${walletAddress}) ${'*'.repeat(20)}`
-    )
-
-    this.tokenService.verifyWallet(walletAddress)
-
-    const nonce = this.generatorService.generateRandomNonce()
-
+  public async VerifyGoogle({ google_token_id }: VerifyGoogleInput) {
     try {
-      const user = await this.prismaService.user.findUniqueOrThrow({
-        where: { walletAddress }
+      const client = new OAuth2Client()
+      const ticket = await client.verifyIdToken({
+        idToken: google_token_id
+      })
+      const payload = ticket.getPayload() as TokenPayload
+      const { sub, email, name } = payload
+
+      let user = await this.prismaService.user.findUnique({
+        where: { email }
       })
 
-      if (user) {
-        await this.prismaService.user.update({
-          where: { walletAddress },
-          data: { nonce }
+      if (!user) {
+        const mnemonic = this.createWallet()
+        const encryptedMnemonic = CryptoJS.AES.encrypt(mnemonic, '').toString()
+        user.mnemonic = encryptedMnemonic
+        // const privateKey = await this.web3Service.getPrivateIndex(mnemonic, 0)
+        // const walletAddress = ethers.Wallet.fromPrivateKey(privateKey).address
+
+        user = await this.prismaService.user.create({
+          data: {
+            id: this.generatorService.uuid(),
+            username: name,
+            walletAddress: 'walletAddress',
+            google_id: sub,
+            email,
+            mnemonic: encryptedMnemonic,
+            nonce: this.generatorService.generateRandomNonce()
+          }
         })
+      }
+      return user
+    } catch (error: any) {
+      throw error.message
+    }
+  }
+
+  public createWallet = () => {
+    const wallet = ethers.Wallet.createRandom()
+    const mnemonic = wallet.mnemonic.phrase
+    return mnemonic
+  }
+
+  public getAddressIndexs = async (mnemonic: string, listIndex: number[]) => {
+    assert(bip39.validateMnemonic(mnemonic), 'Invalid mnemonic')
+    const listAddress = []
+    for (const element of listIndex) {
+      const { address } = ethers.utils.HDNode.fromMnemonic(mnemonic).derivePath(
+        `m/44'/60'/0'/0/${element}`
+      )
+      listAddress.push(address)
+    }
+    return listAddress
+  }
+
+  public async getAddressIndexWallet({
+    google_token_id,
+    listIndex
+  }: ListAddressIndexInput) {
+    try {
+      const client = new OAuth2Client()
+      const ticket = await client.verifyIdToken({
+        idToken: google_token_id
+      })
+      const payload = ticket.getPayload() as TokenPayload
+      const { email } = payload
+
+      const user = await this.prismaService.user.findUnique({
+        where: { email }
+      })
+      const mnemonic = user?.mnemonic || ''
+      const decryptedBytes = CryptoJS.AES.decrypt(mnemonic, '')
+      const decryptedMnemonic = decryptedBytes.toString(CryptoJS.enc.Utf8)
+      if (typeof mnemonic === 'string') {
+        const listAddress = await this.getAddressIndexs(
+          decryptedMnemonic,
+          listIndex
+        )
+        return listAddress
       } else {
-        await this.userService.createUser({
-          nonce: nonce,
-          walletAddress: walletAddress
-        })
+        throw new Error('Mnemonic is undefined')
       }
     } catch (error) {
       throw new InternalServerErrorException(error)
     }
-
-    return nonce
   }
 
   public async signIn({ walletAddress, signature }: SigninDto) {

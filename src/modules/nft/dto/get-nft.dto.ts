@@ -11,7 +11,8 @@ export class GetNftDto {
   @ApiProperty({
     required: true,
     type: 'string',
-    description: 'Token address'
+    description: 'Token address of the NFT',
+    example: '0xabc123456def789...'
   })
   @IsString()
   @IsNotEmpty()
@@ -20,7 +21,8 @@ export class GetNftDto {
   @ApiProperty({
     required: true,
     type: 'string',
-    description: 'Token id'
+    description: 'Token ID of the NFT',
+    example: '1'
   })
   @IsString()
   @IsNotEmpty()
@@ -31,7 +33,8 @@ export class PaginationDto {
   @ApiProperty({
     required: true,
     type: 'object',
-    description: 'Sort Params'
+    description: 'Sort parameters for the query',
+    example: { field: 'price', order: 'asc' }
   })
   @IsNotEmpty()
   sort: SortParams
@@ -39,7 +42,8 @@ export class PaginationDto {
   @ApiProperty({
     required: true,
     type: 'object',
-    description: 'Search Params'
+    description: 'Search parameters for the query',
+    example: { query: 'art', filters: ['painting', 'digital'] }
   })
   @IsNotEmpty()
   search: SearchParams
@@ -47,7 +51,8 @@ export class PaginationDto {
   @ApiProperty({
     required: true,
     type: 'object',
-    description: 'Pagination Params'
+    description: 'Pagination parameters for the query',
+    example: { page: 1, limit: 10 }
   })
   @IsNotEmpty()
   pagination: PaginationParams
@@ -55,7 +60,8 @@ export class PaginationDto {
   @ApiProperty({
     required: true,
     type: 'object',
-    description: 'Filter Params'
+    description: 'Filter parameters for the query',
+    example: { category: 'art', creator: '0xcreatoraddress...' }
   })
   @IsNotEmpty()
   filter: FilterParams

@@ -8,7 +8,8 @@ export class UploadFileDto {
     required: true,
     type: 'string',
     format: 'binary',
-    description: 'Input upload file'
+    description: 'Input upload file',
+    example: 'avatar.png'
   })
   @IsNotEmpty()
   file: any

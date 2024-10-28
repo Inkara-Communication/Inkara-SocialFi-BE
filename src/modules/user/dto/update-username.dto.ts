@@ -7,7 +7,8 @@ export class UpdateUsernameDto {
   @ApiProperty({
     required: true,
     type: 'string',
-    description: 'new username'
+    description: 'new username',
+    example: 'John Smith'
   })
   @IsString()
   @IsNotEmpty()

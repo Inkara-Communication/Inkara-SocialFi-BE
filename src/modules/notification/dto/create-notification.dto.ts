@@ -3,11 +3,13 @@
 import { ApiProperty } from '@nestjs/swagger'
 import { NotificationType } from '@prisma/client'
 import { IsEnum, IsNotEmpty, IsString } from 'class-validator'
+
 export class CreateNotificationDto {
   @ApiProperty({
     required: true,
     type: 'string',
-    description: 'Activity id'
+    description: 'ID of the activity related to the notification',
+    example: 'activity_12345'
   })
   @IsString()
   @IsNotEmpty()
@@ -16,7 +18,8 @@ export class CreateNotificationDto {
   @ApiProperty({
     required: true,
     type: 'string',
-    description: 'Notification type'
+    description: 'Type of notification',
+    example: 'NEW_LIKE'
   })
   @IsEnum(NotificationType)
   @IsNotEmpty()

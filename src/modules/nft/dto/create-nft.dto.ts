@@ -8,7 +8,8 @@ export class CreateNftDto {
   @ApiProperty({
     required: true,
     type: 'string',
-    description: 'Collection id of nft'
+    description: 'Collection ID of the NFT',
+    example: 'collection_12345'
   })
   @IsString()
   @IsNotEmpty()
@@ -17,45 +18,45 @@ export class CreateNftDto {
   @ApiProperty({
     required: true,
     type: 'string',
-    description: 'Nft type'
+    description: 'Type of the NFT',
+    example: 'ART'
   })
-  @ApiProperty()
   @IsString()
   @IsNotEmpty()
   nftType: NftType
 
   @ApiProperty({
     required: true,
-    description: 'Mint price'
+    description: 'Mint price of the NFT',
+    example: '1000000000000000000'
   })
-  @ApiProperty()
   @IsString()
   @IsNotEmpty()
   price: bigint
 
   @ApiProperty({
     required: true,
-    description: 'Royalty'
+    description: 'Royalty percentage for the NFT',
+    example: 5
   })
-  @ApiProperty()
   @IsNumber()
   @IsNotEmpty()
   royalty: number
 
   @ApiProperty({
     required: true,
-    description: 'Network'
+    description: 'Network where the NFT is minted',
+    example: 'EMERALD'
   })
-  @ApiProperty()
   @IsString()
   @IsNotEmpty()
   network: Network
 
   @ApiProperty({
     required: true,
-    description: 'Transaction Hash'
+    description: 'Transaction Hash for the minting process',
+    example: '0xabc123456def789...'
   })
-  @ApiProperty()
   @IsString()
   @IsNotEmpty()
   txHash: string

@@ -2,11 +2,13 @@
 
 import { ApiProperty } from '@nestjs/swagger'
 import { IsArray, IsNotEmpty } from 'class-validator'
+
 export class UpdateNotificationsDto {
   @ApiProperty({
     required: true,
     type: 'string',
-    description: 'Notification ids'
+    description: 'Notification ids',
+    example: 'NEW_LIKE'
   })
   @IsArray()
   @IsNotEmpty()

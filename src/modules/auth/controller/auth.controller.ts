@@ -17,7 +17,6 @@ import { SigninDto } from '@modules/auth/dto/signin.dto'
 import { User } from '@prisma/client'
 import { ForbiddenException } from '../../../errors'
 import { AuthService } from '../services'
-import { SignupDto } from '../dto/signup.dto'
 
 const moduleName = 'auth'
 
@@ -25,15 +24,6 @@ const moduleName = 'auth'
 @Controller(moduleName)
 export class AuthController {
   constructor(private authService: AuthService) {}
-
-  @ApiOperation({ summary: 'Sign up' })
-  @ApiBody({ type: SignupDto })
-  @Public()
-  @Post('signup')
-  @HttpCode(HttpStatus.OK)
-  async signUp(@Body() signupDto: SignupDto) {
-    return this.authService.signUp(signupDto)
-  }
 
   @ApiOperation({ summary: 'Sign in' })
   @ApiBody({ type: SigninDto })
