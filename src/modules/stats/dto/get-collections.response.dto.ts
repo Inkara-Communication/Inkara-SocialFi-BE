@@ -7,104 +7,91 @@ export class GetCollectionsResponse {
   @ApiProperty({
     required: true,
     type: 'string',
-    description: 'ID of the collection',
-    example: 'collection_12345'
+    description: 'ID of the collection'
   })
   id: string
 
   @ApiProperty({
     required: true,
     type: 'string',
-    description: 'Name of the collection',
-    example: 'My Awesome Collection'
+    description: 'Name of the collection'
   })
   name: string
 
   @ApiProperty({
     required: true,
     type: 'object',
-    description: 'Avatar of the collection',
-    example: { id: 'photo_1', url: 'https://example.com/avatar.jpg' }
+    description: 'Avatar of the collection'
   })
   avatar: Photo
 
   @ApiProperty({
     required: true,
     type: 'object',
-    description: 'Banner of the collection',
-    example: { id: 'photo_2', url: 'https://example.com/banner.jpg' }
+    description: 'Banner of the collection'
   })
   banner: Photo
 
   @ApiProperty({
     required: false,
     type: 'string',
-    description: 'Description of the collection',
-    example: 'This is a collection of awesome NFTs.'
+    description: 'Description of the collection'
   })
   desc: string
 
   @ApiProperty({
     required: true,
     type: 'string',
-    description: 'Address of the collection',
-    example: '0x1234567890abcdef1234567890abcdef12345678'
+    description: 'Address of the collection'
   })
   address: string
 
   @ApiProperty({
     required: true,
     type: 'number',
-    description: 'Total supply of NFTs in the collection',
-    example: 1000
+    description: 'Total supply of NFTs in the collection'
   })
   supply: number
 
   @ApiProperty({
     required: true,
     type: 'boolean',
-    description: 'Whether the collection is verified',
-    example: true
+    description: 'Whether the collection is verified'
   })
   verified: boolean
 
   @ApiProperty({
     required: true,
     type: 'number',
-    description: 'Number of owners of the collection',
-    example: 500
+    description: 'Number of owners of the collection'
   })
   owners: number
 
   @ApiProperty({
     required: true,
     type: 'number',
-    description: 'Number of listed items in the collection',
-    example: 200
+    description: 'Number of listed items in the collection'
   })
   listedItems: number
 
   @ApiProperty({
     required: true,
     type: 'number',
-    description: 'Number of sold items in the collection',
-    example: 150
+    description: 'Number of sold items in the collection'
   })
   salesItems: number
 
   @ApiProperty({
     required: true,
     type: 'bigint',
-    description: 'Floor price of the collection',
-    example: 0
+    description: 'Floor price of the collection'
   })
   floorPrice: bigint
 
   @ApiProperty({
     required: true,
     type: 'bigint',
-    description: 'Total volume of sales in the collection',
-    example: 10000
+    description: 'Total volume of sales in the collection'
   })
   volume: bigint
 }

@@ -24,8 +24,7 @@ export class ListAddressIndexInput {
   @ApiProperty({
     required: true,
     type: 'string',
-    description: 'Google token ID for listing address indices',
-    example: 'your-google-token-id'
+    description: 'Google token ID for listing address indices'
   })
   @IsString()
   @IsNotEmpty()
@@ -42,8 +41,7 @@ export class PrivateKeyIndexInput {
   @ApiProperty({
     required: true,
     type: 'string',
-    description: 'Google token ID for retrieving private key',
-    example: 'your-google-token-id'
+    description: 'Google token ID for retrieving private key'
   })
   @IsString()
   @IsNotEmpty()
@@ -52,8 +50,7 @@ export class PrivateKeyIndexInput {
   @ApiProperty({
     required: true,
     type: 'string',
-    description: 'Index for private key',
-    example: 0
+    description: 'Index for private key'
   })
   @IsNumber()
   index: number

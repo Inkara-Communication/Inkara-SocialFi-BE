@@ -7,8 +7,7 @@ export class GetCollectionsRequest {
   @ApiProperty({
     required: false,
     type: 'boolean',
-    description: 'Sort in ascending order',
-    example: true
+    description: 'Sort in ascending order'
   })
   @IsOptional()
   @IsBoolean()
@@ -17,8 +16,7 @@ export class GetCollectionsRequest {
   @ApiProperty({
     required: false,
     type: 'string',
-    description: 'Property to sort by',
-    example: 'name'
+    description: 'Property to sort by'
   })
   @IsOptional()
   @IsString()

@@ -7,8 +7,7 @@ export class CreateHideDto {
   @ApiProperty({
     required: true,
     type: 'string',
-    description: 'Nft id',
-    example: '1234'
+    description: 'Nft id'
   })
   @IsString()
   @IsNotEmpty()

@@ -8,8 +8,7 @@ export class AvatarDto {
   @ApiProperty({
     required: true,
     type: 'string',
-    description: 'URL of the avatar image',
-    example: 'https://example.com/avatar.jpg'
+    description: 'URL of the avatar image'
   })
   @IsString()
   url!: string
@@ -17,8 +16,7 @@ export class AvatarDto {
   @ApiProperty({
     required: true,
     type: 'string',
-    description: 'Mint ID of the avatar',
-    example: 'mint_12345'
+    description: 'Mint ID of the avatar'
   })
   @IsString()
   mintId!: string
@@ -26,8 +24,7 @@ export class AvatarDto {
   @ApiProperty({
     required: true,
     type: 'string',
-    description: 'Link to the avatar',
-    example: 'https://example.com/avatar-link'
+    description: 'Link to the avatar'
   })
   @IsString()
   link!: string
@@ -35,8 +32,7 @@ export class AvatarDto {
   @ApiProperty({
     required: true,
     type: 'boolean',
-    description: 'Whether the avatar is verified',
-    example: true
+    description: 'Whether the avatar is verified'
   })
   @IsBoolean()
   verified!: boolean
@@ -46,8 +42,7 @@ export class UpdateProfileDto {
   @ApiProperty({
     required: false,
     type: 'string',
-    description: 'Bio of the user',
-    example: 'I am a passionate NFT collector.'
+    description: 'Bio of the user'
   })
   @IsString()
   @IsOptional()
@@ -56,8 +51,7 @@ export class UpdateProfileDto {
   @ApiProperty({
     required: false,
     type: 'string',
-    description: 'Avatar image ID',
-    example: 'avatar_12345'
+    description: 'Avatar image ID'
   })
   @IsString()
   @IsOptional()
@@ -66,8 +60,7 @@ export class UpdateProfileDto {
   @ApiProperty({
     required: false,
     type: 'string',
-    description: 'Banner image ID',
-    example: 'banner_12345'
+    description: 'Banner image ID'
   })
   @IsString()
   @IsOptional()
@@ -76,8 +69,7 @@ export class UpdateProfileDto {
   @ApiProperty({
     required: false,
     type: 'string',
-    description: 'Twitter link',
-    example: 'https://twitter.com/user'
+    description: 'Twitter link'
   })
   @IsString()
   @IsOptional()
@@ -86,8 +78,7 @@ export class UpdateProfileDto {
   @ApiProperty({
     required: false,
     type: 'string',
-    description: 'Discord link',
-    example: 'https://discord.gg/user'
+    description: 'Discord link'
   })
   @IsString()
   @IsOptional()
@@ -96,8 +87,7 @@ export class UpdateProfileDto {
   @ApiProperty({
     required: false,
     type: 'string',
-    description: 'Facebook link',
-    example: 'https://facebook.com/user'
+    description: 'Facebook link'
   })
   @IsString()
   @IsOptional()
@@ -106,8 +96,7 @@ export class UpdateProfileDto {
   @ApiProperty({
     required: false,
     type: 'string',
-    description: 'Reddit link',
-    example: 'https://reddit.com/user'
+    description: 'Reddit link'
   })
   @IsString()
   @IsOptional()
@@ -116,8 +105,7 @@ export class UpdateProfileDto {
   @ApiProperty({
     required: false,
     type: 'string',
-    description: 'User email',
-    example: 'user@example.com'
+    description: 'User email'
   })
   @IsString()
   @IsOptional()
@@ -126,8 +114,7 @@ export class UpdateProfileDto {
   @ApiProperty({
     required: false,
     type: 'string',
-    description: 'Offer threshold token',
-    example: 'TOKEN_ID'
+    description: 'Offer threshold token'
   })
   @IsString()
   @IsOptional()
@@ -135,8 +122,7 @@ export class UpdateProfileDto {
 
   @ApiProperty({
     required: false,
-    description: 'Offer threshold value',
-    example: 100
+    description: 'Offer threshold value'
   })
   @IsString()
   @IsOptional()

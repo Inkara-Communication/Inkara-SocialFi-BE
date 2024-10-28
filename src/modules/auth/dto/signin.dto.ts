@@ -7,8 +7,7 @@ export class SigninDto {
   @ApiProperty({
     required: true,
     type: 'string',
-    description: 'Wallet address',
-    example: '0x1234567890abcdef1234567890abcdef12345678'
+    description: 'Wallet address'
   })
   @IsString()
   @IsNotEmpty()
@@ -17,9 +16,7 @@ export class SigninDto {
   @ApiProperty({
     required: true,
     type: 'string',
-    description: 'Sign signature',
-    example:
-      '0xabcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890'
+    description: 'Sign signature'
   })
   @IsString()
   @IsNotEmpty()

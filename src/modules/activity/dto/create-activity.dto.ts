@@ -7,8 +7,7 @@ export class CreateActivityDto {
   @ApiProperty({
     required: false,
     type: 'string',
-    description: 'Buyer ID',
-    example: 'user-12345'
+    description: 'Buyer ID'
   })
   @IsString()
   buyerId?: string
@@ -16,8 +15,7 @@ export class CreateActivityDto {
   @ApiProperty({
     required: true,
     type: 'string',
-    description: 'Listing ID',
-    example: 'listing-54321'
+    description: 'Listing ID'
   })
   @IsString()
   listingId: string
@@ -25,8 +23,7 @@ export class CreateActivityDto {
   @ApiProperty({
     required: true,
     type: 'string',
-    description: 'NFT ID',
-    example: 'nft-98765'
+    description: 'NFT ID'
   })
   @IsString()
   nftId: string
@@ -34,8 +31,7 @@ export class CreateActivityDto {
   @ApiProperty({
     required: true,
     type: 'number',
-    description: 'Activity price',
-    example: 150
+    description: 'Activity price'
   })
   @IsNumber()
   activityPrice: number

@@ -7,8 +7,7 @@ export class UpdateNotificationsDto {
   @ApiProperty({
     required: true,
     type: 'string',
-    description: 'Notification ids',
-    example: 'NEW_LIKE'
+    description: 'Notification ids'
   })
   @IsArray()
   @IsNotEmpty()

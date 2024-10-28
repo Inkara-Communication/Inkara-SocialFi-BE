@@ -7,8 +7,7 @@ export class CreateLikeDto {
   @ApiProperty({
     required: false,
     type: 'string',
-    description: 'ID of the NFT being liked',
-    example: 'nft_12345'
+    description: 'ID of the NFT being liked'
   })
   @IsString()
   @IsOptional()
@@ -17,8 +16,7 @@ export class CreateLikeDto {
   @ApiProperty({
     required: true,
     type: 'string',
-    description: 'ID of the post being liked',
-    example: 'post_67890'
+    description: 'ID of the post being liked'
   })
   @IsString()
   @IsOptional()

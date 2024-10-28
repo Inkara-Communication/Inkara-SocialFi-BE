@@ -8,8 +8,7 @@ export class CreateOfferDto {
   @ApiProperty({
     required: true,
     type: 'string',
-    description: 'ID of the NFT',
-    example: 'nft_67890'
+    description: 'ID of the NFT'
   })
   @IsString()
   @IsNotEmpty()
@@ -18,8 +17,7 @@ export class CreateOfferDto {
   @ApiProperty({
     required: true,
     type: 'string',
-    description: 'Transaction signature for validation',
-    example: '0x123abc...'
+    description: 'Transaction signature for validation'
   })
   @IsString()
   @IsNotEmpty()
@@ -28,8 +26,7 @@ export class CreateOfferDto {
   @ApiProperty({
     required: true,
     type: 'string',
-    description: 'Parameters for the offer',
-    example: '{"price": "0.05", "expiresAt": "2024-10-30T00:00:00Z"}'
+    description: 'Parameters for the offer'
   })
   @IsString()
   @IsNotEmpty()
@@ -38,8 +35,7 @@ export class CreateOfferDto {
   @ApiProperty({
     required: true,
     type: 'string',
-    description: 'Network where the transaction takes place',
-    example: 'EMERALD'
+    description: 'Network where the transaction takes place'
   })
   @IsEnum(Network)
   @IsNotEmpty()

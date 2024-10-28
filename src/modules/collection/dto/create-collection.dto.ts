@@ -8,8 +8,7 @@ export class CreateCollectionDto {
   @ApiProperty({
     required: true,
     type: 'string',
-    description: 'Collection name',
-    example: 'My Unique Collection'
+    description: 'Collection name'
   })
   @IsString()
   @IsNotEmpty()
@@ -18,8 +17,7 @@ export class CreateCollectionDto {
   @ApiProperty({
     required: true,
     type: 'string',
-    description: 'Collection address',
-    example: '0x1234567890abcdef1234567890abcdef12345678'
+    description: 'Collection address'
   })
   @IsString()
   @IsNotEmpty()
@@ -28,8 +26,7 @@ export class CreateCollectionDto {
   @ApiProperty({
     required: true,
     type: 'number',
-    description: 'Total supply',
-    example: 1000
+    description: 'Total supply'
   })
   @IsNumber()
   @IsNotEmpty()
@@ -38,8 +35,7 @@ export class CreateCollectionDto {
   @ApiProperty({
     required: false,
     type: 'string',
-    description: 'Avatar id',
-    example: 'avatar-12345'
+    description: 'Avatar id'
   })
   @IsString()
   @IsOptional()
@@ -48,8 +44,7 @@ export class CreateCollectionDto {
   @ApiProperty({
     required: false,
     type: 'string',
-    description: 'Banner id',
-    example: 'banner-67890'
+    description: 'Banner id'
   })
   @IsString()
   @IsOptional()
@@ -58,8 +53,7 @@ export class CreateCollectionDto {
   @ApiProperty({
     required: false,
     type: 'string',
-    description: 'Collection description',
-    example: 'This collection features unique artworks and collectibles.'
+    description: 'Collection description'
   })
   @IsString()
   @IsOptional()
@@ -68,8 +62,7 @@ export class CreateCollectionDto {
   @ApiProperty({
     required: false,
     type: 'string',
-    description: 'Website url',
-    example: 'https://mycollection.com'
+    description: 'Website url'
   })
   @IsString()
   @IsOptional()
@@ -78,8 +71,7 @@ export class CreateCollectionDto {
   @ApiProperty({
     required: false,
     type: 'string',
-    description: 'Twitter url',
-    example: 'https://twitter.com/mycollection'
+    description: 'Twitter url'
   })
   @IsString()
   @IsOptional()
@@ -88,8 +80,7 @@ export class CreateCollectionDto {
   @ApiProperty({
     required: false,
     type: 'string',
-    description: 'Discord url',
-    example: 'https://discord.gg/mycollection'
+    description: 'Discord url'
   })
   @IsString()
   @IsOptional()
@@ -98,8 +89,7 @@ export class CreateCollectionDto {
   @ApiProperty({
     required: true,
     type: 'string',
-    description: 'Network',
-    example: 'EMERALD'
+    description: 'Network'
   })
   @IsString()
   @IsNotEmpty()

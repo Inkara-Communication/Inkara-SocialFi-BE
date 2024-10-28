@@ -8,8 +8,7 @@ export class CancelOfferDto {
   @ApiProperty({
     required: true,
     type: 'string',
-    description: 'ID of the offer to cancel',
-    example: 'offer_12345'
+    description: 'ID of the offer to cancel'
   })
   @IsString()
   @IsNotEmpty()
@@ -18,8 +17,7 @@ export class CancelOfferDto {
   @ApiProperty({
     required: true,
     type: 'string',
-    description: 'Network where the transaction takes place',
-    example: 'EMERALD'
+    description: 'Network where the transaction takes place'
   })
   @IsEnum(Network)
   @IsNotEmpty()

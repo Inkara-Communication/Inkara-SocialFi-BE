@@ -8,8 +8,7 @@ export class CreateNotificationDto {
   @ApiProperty({
     required: true,
     type: 'string',
-    description: 'ID of the activity related to the notification',
-    example: 'activity_12345'
+    description: 'ID of the activity related to the notification'
   })
   @IsString()
   @IsNotEmpty()
@@ -18,8 +17,7 @@ export class CreateNotificationDto {
   @ApiProperty({
     required: true,
     type: 'string',
-    description: 'Type of notification',
-    example: 'NEW_LIKE'
+    description: 'Type of notification'
   })
   @IsEnum(NotificationType)
   @IsNotEmpty()
