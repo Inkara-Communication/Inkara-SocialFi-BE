@@ -12,7 +12,7 @@ model User {
   id                 String               @id @unique
   username           String               @unique
   walletAddress      String               @unique
-  email              String?
+  email              String               @unique
   google_id          String?
   nonce              String
   mnemonic           String?
