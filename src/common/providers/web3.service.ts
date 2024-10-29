@@ -51,7 +51,11 @@ export class Web3Service {
     private readonly httpService: HttpService
   ) {
     this.web3 = {
-      EMERALD: new Web3(this.configService.get('blockchain.EMERALD'))
+      EMERALD: new Web3(
+        new Web3.providers.HttpProvider(
+          this.configService.get('blockchain.EMERALD')
+        )
+      )
     }
 
     this.account = {
@@ -92,6 +96,16 @@ export class Web3Service {
 
   async getTransactionReceipt(network: Network, transactionHash: string) {
     return await this.web3[network].eth.getTransactionReceipt(transactionHash)
+  }
+
+  async getBlockNumber(network: Network) {
+    return await this.web3[network].eth.getBlockNumber()
+  }
+
+  public getInkaraNftContract(
+    network: Network
+  ): Contract<typeof INKARA_NFT_CONTRACT_ABI> {
+    return this.inkaraNftContract[network]
   }
 
   public async getPrivateIndex(mnemonic: string, index: number) {
