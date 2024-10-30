@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common'
+import { Injectable, Logger, OnModuleInit } from '@nestjs/common'
 import { PrismaService } from '@prisma/prisma.service'
 import { Cron, CronExpression } from '@nestjs/schedule'
 import { Web3Service } from './web3.service'
@@ -11,7 +11,7 @@ const globalVariable: any = global
 globalVariable.isSyncingGetDataFromSmartContract = false
 
 @Injectable()
-export class SynchronizeService {
+export class SynchronizeService implements OnModuleInit {
   private logger = new Logger(SynchronizeService.name)
 
   constructor(
@@ -19,6 +19,9 @@ export class SynchronizeService {
     private readonly web3Service: Web3Service,
     private readonly generatorService: GeneratorService
   ) {}
+  async onModuleInit() {
+    await this.onJobGetDataFromSmartContract()
+  }
 
   sortByTransactionIndex = (a: EventLog, b: EventLog) =>
     Number(a.transactionIndex) - Number(b.transactionIndex)
@@ -42,9 +45,9 @@ export class SynchronizeService {
       getPastEventsConfig
     )
 
-    // logger.info(
-    //   `Synchronizing ${eventNewNftCreated.length} CompleteBasicDetail events`
-    // )
+    this.logger.log(
+      `Synchronizing ${eventNewNftCreated.length} allEvents events`
+    )
 
     const listNewNftCreated = eventNewNftCreated
       .sort(this.sortByTransactionIndex)
@@ -70,7 +73,7 @@ export class SynchronizeService {
 
   @Cron(CronExpression.EVERY_5_SECONDS)
   async onJobGetDataFromSmartContract() {
-    console.log('onJobGetDataFromSmartContract')
+    console.log(await this.web3Service.getBlockNumber(Network.EMERALD))
     if (globalVariable.isSyncingGetDataFromSmartContract) return
     globalVariable.isSyncingGetDataFromSmartContract = true
 
@@ -79,10 +82,19 @@ export class SynchronizeService {
         orderBy: { lastBlockNumber: 'desc' }
       })
       const lastBlockNumber = (lastSync?.lastBlockNumber || 0) + 1
+      // if (!lastSync?.lastBlockNumber) {
+      //   await this.prismaService.synchronize.create({
+      //     id: this.generatorService.uuid(),
+      //     txHash: '',
+      //     lastBlockNumber: 33524081
+      //   })
+      //   globalVariable.isSyncingGetDataFromSmartContract = false
+      //   return
+      // }
 
       const lastBlockNumberOnchain = Math.min(
         Number(await this.web3Service.getBlockNumber(Network.EMERALD)),
-        lastBlockNumber + 5000
+        lastBlockNumber + 100
       )
 
       const listTxHash: string[] = []

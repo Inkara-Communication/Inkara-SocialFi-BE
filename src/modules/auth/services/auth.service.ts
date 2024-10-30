@@ -34,12 +34,12 @@ export class AuthService {
   private logger = new Logger(AuthService.name)
   constructor(
     private readonly userService: UserService,
-    private prismaService: PrismaService,
-    private jwtService: JwtService,
-    private tokenService: TokenService,
-    private configService: ConfigService,
-    private redisService: RedisService,
-    private generatorService: GeneratorService,
+    private readonly prismaService: PrismaService,
+    private readonly jwtService: JwtService,
+    private readonly tokenService: TokenService,
+    private readonly configService: ConfigService,
+    private readonly redisService: RedisService,
+    private readonly generatorService: GeneratorService,
     private readonly web3Service: Web3Service
   ) {}
 
