@@ -1,5 +1,3 @@
-// auth.controller.ts
-
 import {
   Body,
   Controller,
@@ -14,6 +12,10 @@ import { CurrentUser, Public } from '@common/decorators'
 import { AccessTokenGuard, RefreshTokenGuard } from '@common/guards'
 import { IPayloadUserJwt, IRequestWithUser } from '@common/interfaces'
 import { SigninDto } from '@modules/auth/dto/signin.dto'
+import {
+  VerifyGoogleInput,
+  ListAddressIndexInput
+} from '@modules/auth/dto/signin-google.dto'
 import { User } from '@prisma/client'
 import { ForbiddenException } from '../../../errors'
 import { AuthService } from '../services'
@@ -32,6 +34,34 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   async signIn(@Body() data: SigninDto): Promise<any> {
     return await this.authService.signIn(data)
+  }
+
+  @ApiOperation({ summary: 'Google Sign-In Verification' })
+  @ApiBody({ type: VerifyGoogleInput })
+  @Public()
+  @Post('verify-google')
+  @HttpCode(HttpStatus.OK)
+  async verifyGoogle(@Body() data: VerifyGoogleInput): Promise<User> {
+    return await this.authService.VerifyGoogle(data)
+  }
+
+  @ApiOperation({ summary: 'Generate Wallet Address from Mnemonic' })
+  @Post('generate-mnemonic')
+  // @UseGuards(AccessTokenGuard)
+  @HttpCode(HttpStatus.OK)
+  async generateMnemonic(): Promise<string> {
+    return this.authService.createWallet()
+  }
+
+  @ApiOperation({ summary: 'Generate Wallet Address from Mnemonic' })
+  @ApiBody({ type: ListAddressIndexInput })
+  @UseGuards(AccessTokenGuard)
+  @Post('generate-address')
+  @HttpCode(HttpStatus.OK)
+  async generateAddress(
+    @Body() data: ListAddressIndexInput
+  ): Promise<string[]> {
+    return await this.authService.getAddressIndexWallet(data)
   }
 
   @ApiOperation({ summary: 'Sign out' })

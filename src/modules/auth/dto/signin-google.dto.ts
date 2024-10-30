@@ -17,7 +17,7 @@ export class VerifyGoogleInput {
   })
   @IsString()
   @IsNotEmpty()
-  google_token_id: string
+  googleTokenId: string
 }
 
 export class ListAddressIndexInput {
@@ -28,7 +28,7 @@ export class ListAddressIndexInput {
   })
   @IsString()
   @IsNotEmpty()
-  google_token_id: string
+  googleTokenId: string
 
   @ApiProperty({ description: 'List of address indices', type: [Number] })
   @IsArray()
@@ -45,7 +45,7 @@ export class PrivateKeyIndexInput {
   })
   @IsString()
   @IsNotEmpty()
-  google_token_id: string
+  googleTokenId: string
 
   @ApiProperty({
     required: true,

@@ -13,11 +13,10 @@ model User {
   username           String               @unique
   walletAddress      String               @unique
   email              String               @unique
-  google_id          String?
   nonce              String
-  mnemonic           String?
+  mnemonic           String
   isActive           Boolean              @default(true)
-  lastLoginAt        DateTime?
+  lastLoginAt        DateTime
   createdAt          DateTime             @default(now())
   updatedAt          DateTime             @updatedAt
   profile            Profile?

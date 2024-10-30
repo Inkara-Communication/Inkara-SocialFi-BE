@@ -23,9 +23,9 @@ import {
   TokenData
 } from '@common/types'
 import * as bip39 from 'bip39'
-import { hdkey } from 'ethereumjs-wallet'
 import assert from 'assert'
 import CryptoJS from 'crypto-js'
+import { ethers } from 'ethers'
 // import { ListingDto } from '@modules/listing/dto/listing.dto'
 // import { AcceptOfferDto } from '@modules/offer/dto/accept-offer.dto'
 
@@ -113,14 +113,12 @@ export class Web3Service {
     const decryptedMnemonic = decryptedBytes.toString(CryptoJS.enc.Utf8)
     assert(bip39.validateMnemonic(decryptedMnemonic), 'Invalid mnemonic')
 
-    const wallet_hdpath = "m/44'/60'/0'/0/"
+    const derivePath = `m/44'/60'/0'/0/${index}`
     const seed = await bip39.mnemonicToSeed(mnemonic)
-    const hdwallet = hdkey.fromMasterSeed(seed)
-    const wallet = this.web3.EMERALD.eth.accounts.wallet.create(0)
-    const baseWallet = hdwallet.derivePath(wallet_hdpath + index).getWallet()
-    const privateKey = baseWallet.getPrivateKey().toString('hex')
-    wallet.clear()
-    wallet.add(privateKey)
+    const hdWallet = ethers.utils.HDNode.fromSeed(seed)
+    const wallet = hdWallet.derivePath(derivePath)
+    const privateKey = wallet.privateKey
+
     return privateKey
   }
 

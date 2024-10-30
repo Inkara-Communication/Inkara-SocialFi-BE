@@ -53,14 +53,14 @@ export class AuthService {
     return true
   }
 
-  public async VerifyGoogle({ google_token_id }: VerifyGoogleInput) {
+  public async VerifyGoogle({ googleTokenId }: VerifyGoogleInput) {
     try {
       const client = new OAuth2Client()
       const ticket = await client.verifyIdToken({
-        idToken: google_token_id
+        idToken: googleTokenId
       })
       const payload = ticket.getPayload() as TokenPayload
-      const { sub, email, name } = payload
+      const { email, name } = payload
 
       let user = await this.prismaService.user.findUnique({
         where: { email }
@@ -69,20 +69,26 @@ export class AuthService {
       if (!user) {
         const mnemonic = this.createWallet()
         const encryptedMnemonic = CryptoJS.AES.encrypt(mnemonic, '').toString()
-        user.mnemonic = encryptedMnemonic
-        // const privateKey = await this.web3Service.getPrivateIndex(mnemonic, 0)
-        // const walletAddress = ethers.Wallet.fromPrivateKey(privateKey).address
-
+        const privateKey = await this.web3Service.getPrivateIndex(
+          encryptedMnemonic,
+          0
+        )
+        const walletAddress = new ethers.Wallet(privateKey).address
         user = await this.prismaService.user.create({
           data: {
             id: this.generatorService.uuid(),
             username: name,
-            walletAddress: 'walletAddress',
-            google_id: sub,
+            walletAddress: walletAddress,
             email,
             mnemonic: encryptedMnemonic,
-            nonce: this.generatorService.generateRandomNonce()
+            nonce: this.generatorService.generateRandomNonce(),
+            lastLoginAt: new Date()
           }
+        })
+      } else {
+        user = await this.prismaService.user.update({
+          where: { email },
+          data: { lastLoginAt: new Date() }
         })
       }
       return user
@@ -110,13 +116,13 @@ export class AuthService {
   }
 
   public async getAddressIndexWallet({
-    google_token_id,
+    googleTokenId,
     listIndex
   }: ListAddressIndexInput) {
     try {
       const client = new OAuth2Client()
       const ticket = await client.verifyIdToken({
-        idToken: google_token_id
+        idToken: googleTokenId
       })
       const payload = ticket.getPayload() as TokenPayload
       const { email } = payload
