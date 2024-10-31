@@ -90,6 +90,12 @@ export class Web3Service {
     return this.web3[network].eth.getBalance(address)
   }
 
+  async getAllowance(network: Network, address: string, spender: string) {
+    return this.inkaraTokenContract[network].methods
+      .allowance(address, spender)
+      .call()
+  }
+
   async getTransaction(network: Network, transactionHash: string) {
     return await this.web3[network].eth.getTransaction(transactionHash)
   }
@@ -100,6 +106,51 @@ export class Web3Service {
 
   async getBlockNumber(network: Network) {
     return await this.web3[network].eth.getBlockNumber()
+  }
+
+  async adminSign(
+    network: Network,
+    privateKey: string,
+    methodData: string,
+    contractAddress: string
+  ) {
+    const tx = {
+      to: contractAddress,
+      data: methodData,
+      gas: 500000
+    }
+
+    const signedTx = await this.web3[network].eth.accounts.signTransaction(
+      tx,
+      privateKey
+    )
+    if (signedTx.rawTransaction) {
+      return await this.web3[network].eth.sendSignedTransaction(
+        signedTx.rawTransaction
+      )
+    }
+  }
+
+  async signAndSendTransaction(userSignature: string): Promise<any> {
+    return await this.web3.EMERALD.eth.sendSignedTransaction(userSignature)
+  }
+
+  async signMessage(
+    user_address: string,
+    amount_withdraw: string,
+    nonce: string
+  ) {
+    const messageHash = this.web3.EMERALD.utils.soliditySha3(
+      user_address,
+      amount_withdraw,
+      nonce
+    )
+
+    const signature = this.web3.EMERALD.eth.accounts.sign(
+      messageHash as string,
+      this.configService.get('credential.ACCOUNT_PRIVATE_KEY')
+    )
+    return signature.signature
   }
 
   public getInkaraNftContract(
