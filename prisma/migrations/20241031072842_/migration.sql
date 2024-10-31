@@ -33,11 +33,11 @@ CREATE TABLE "User" (
     "id" TEXT NOT NULL,
     "username" TEXT NOT NULL,
     "walletAddress" TEXT NOT NULL,
-    "email" TEXT,
+    "email" TEXT NOT NULL,
     "nonce" TEXT NOT NULL,
-    "mnemonic" TEXT,
+    "mnemonic" TEXT NOT NULL,
     "isActive" BOOLEAN NOT NULL DEFAULT true,
-    "lastLoginAt" TIMESTAMP(3),
+    "lastLoginAt" TIMESTAMP(3) NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -100,14 +100,25 @@ CREATE TABLE "Post" (
 );
 
 -- CreateTable
-CREATE TABLE "Like" (
+CREATE TABLE "PostLike" (
+    "id" TEXT NOT NULL,
+    "postId" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "PostLike_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "NftLike" (
     "id" TEXT NOT NULL,
     "nftId" TEXT NOT NULL,
     "userId" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
-    CONSTRAINT "Like_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "NftLike_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -162,14 +173,22 @@ CREATE TABLE "FileEntity" (
 );
 
 -- CreateTable
-CREATE TABLE "Synchronize" (
+CREATE TABLE "Contract" (
     "id" TEXT NOT NULL,
-    "txHash" TEXT NOT NULL,
+    "contractName" TEXT NOT NULL,
+
+    CONSTRAINT "Contract_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Transaction" (
+    "id" TEXT NOT NULL,
+    "contractId" TEXT NOT NULL,
+    "transactionHash" TEXT[],
     "blockNumber" INTEGER NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
 
-    CONSTRAINT "Synchronize_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "Transaction_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -207,6 +226,7 @@ CREATE TABLE "NFT" (
     "image" TEXT NOT NULL,
     "attributes" JSONB NOT NULL,
     "royalty" INTEGER NOT NULL,
+    "slug" TEXT,
     "nftType" "NftType" NOT NULL,
     "NftStatus" "NftStatus" NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -351,12 +371,6 @@ CREATE TABLE "EventParticipation" (
     CONSTRAINT "EventParticipation_pkey" PRIMARY KEY ("id")
 );
 
--- CreateTable
-CREATE TABLE "_LikeToPost" (
-    "A" TEXT NOT NULL,
-    "B" TEXT NOT NULL
-);
-
 -- CreateIndex
 CREATE UNIQUE INDEX "User_id_key" ON "User"("id");
 
@@ -365,6 +379,18 @@ CREATE UNIQUE INDEX "User_username_key" ON "User"("username");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "User_walletAddress_key" ON "User"("walletAddress");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
+
+-- CreateIndex
+CREATE INDEX "User_username_idx" ON "User"("username");
+
+-- CreateIndex
+CREATE INDEX "User_walletAddress_idx" ON "User"("walletAddress");
+
+-- CreateIndex
+CREATE INDEX "User_email_idx" ON "User"("email");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Session_id_key" ON "Session"("id");
@@ -394,7 +420,10 @@ CREATE UNIQUE INDEX "Photo_fileEntityId_key" ON "Photo"("fileEntityId");
 CREATE UNIQUE INDEX "Post_id_key" ON "Post"("id");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Like_id_key" ON "Like"("id");
+CREATE UNIQUE INDEX "PostLike_id_key" ON "PostLike"("id");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "NftLike_id_key" ON "NftLike"("id");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Comment_id_key" ON "Comment"("id");
@@ -409,10 +438,13 @@ CREATE UNIQUE INDEX "Message_id_key" ON "Message"("id");
 CREATE UNIQUE INDEX "FileEntity_id_key" ON "FileEntity"("id");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Synchronize_id_key" ON "Synchronize"("id");
+CREATE UNIQUE INDEX "Contract_id_key" ON "Contract"("id");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Synchronize_txHash_key" ON "Synchronize"("txHash");
+CREATE UNIQUE INDEX "Contract_contractName_key" ON "Contract"("contractName");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Transaction_id_key" ON "Transaction"("id");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Collection_id_key" ON "Collection"("id");
@@ -428,6 +460,15 @@ CREATE UNIQUE INDEX "Collection_bannerId_key" ON "Collection"("bannerId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "NFT_id_key" ON "NFT"("id");
+
+-- CreateIndex
+CREATE INDEX "NFT_ownerId_idx" ON "NFT"("ownerId");
+
+-- CreateIndex
+CREATE INDEX "NFT_minterId_idx" ON "NFT"("minterId");
+
+-- CreateIndex
+CREATE INDEX "NFT_collectionId_idx" ON "NFT"("collectionId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Listing_id_key" ON "Listing"("id");
@@ -459,12 +500,6 @@ CREATE UNIQUE INDEX "Event_id_key" ON "Event"("id");
 -- CreateIndex
 CREATE UNIQUE INDEX "EventParticipation_id_key" ON "EventParticipation"("id");
 
--- CreateIndex
-CREATE UNIQUE INDEX "_LikeToPost_AB_unique" ON "_LikeToPost"("A", "B");
-
--- CreateIndex
-CREATE INDEX "_LikeToPost_B_index" ON "_LikeToPost"("B");
-
 -- AddForeignKey
 ALTER TABLE "Session" ADD CONSTRAINT "Session_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
@@ -481,10 +516,16 @@ ALTER TABLE "Photo" ADD CONSTRAINT "Photo_fileEntityId_fkey" FOREIGN KEY ("fileE
 ALTER TABLE "Post" ADD CONSTRAINT "Post_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Like" ADD CONSTRAINT "Like_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "PostLike" ADD CONSTRAINT "PostLike_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Like" ADD CONSTRAINT "Like_nftId_fkey" FOREIGN KEY ("nftId") REFERENCES "NFT"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "PostLike" ADD CONSTRAINT "PostLike_postId_fkey" FOREIGN KEY ("postId") REFERENCES "Post"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "NftLike" ADD CONSTRAINT "NftLike_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "NftLike" ADD CONSTRAINT "NftLike_nftId_fkey" FOREIGN KEY ("nftId") REFERENCES "NFT"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Comment" ADD CONSTRAINT "Comment_postId_fkey" FOREIGN KEY ("postId") REFERENCES "Post"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -503,6 +544,9 @@ ALTER TABLE "Message" ADD CONSTRAINT "Message_senderId_fkey" FOREIGN KEY ("sende
 
 -- AddForeignKey
 ALTER TABLE "Message" ADD CONSTRAINT "Message_receiverId_fkey" FOREIGN KEY ("receiverId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Transaction" ADD CONSTRAINT "Transaction_contractId_fkey" FOREIGN KEY ("contractId") REFERENCES "Contract"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Collection" ADD CONSTRAINT "Collection_creatorId_fkey" FOREIGN KEY ("creatorId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -575,9 +619,3 @@ ALTER TABLE "EventParticipation" ADD CONSTRAINT "EventParticipation_userId_fkey"
 
 -- AddForeignKey
 ALTER TABLE "EventParticipation" ADD CONSTRAINT "EventParticipation_nftId_fkey" FOREIGN KEY ("nftId") REFERENCES "NFT"("id") ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "_LikeToPost" ADD CONSTRAINT "_LikeToPost_A_fkey" FOREIGN KEY ("A") REFERENCES "Like"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "_LikeToPost" ADD CONSTRAINT "_LikeToPost_B_fkey" FOREIGN KEY ("B") REFERENCES "Post"("id") ON DELETE CASCADE ON UPDATE CASCADE;

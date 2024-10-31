@@ -89,13 +89,13 @@ model Photo {
 }
 
 model Post {
-  id        String    @id @unique
+  id        String     @id @unique
   userId    String
   content   String
   mediaUrl  String?
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  user      User      @relation(fields: [userId], references: [id])
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  user      User       @relation(fields: [userId], references: [id])
   comments  Comment[]
   likes     PostLike[]
 }
@@ -166,36 +166,43 @@ model FileEntity {
   Photo       Photo[]
 }
 
-model Synchronize {
+model Contract {
+  id           String        @id @unique
+  contractName String        @unique
+  transactions Transaction[]
+}
+
+model Transaction {
   id              String   @id @unique
-  txHash          String[]
-  lastBlockNumber Int
+  contractId      String
+  transactionHash String[]
+  blockNumber     Int
   createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  contract        Contract @relation(fields: [contractId], references: [id])
 }
 
 model Collection {
-  id          String   @id @unique
-  name        String
-  address     String   @unique
-  supply      Int
-  avatarId    String?  @unique
-  bannerId    String?  @unique
-  desc        String?
-  website     String?
-  twitter     String?
-  discord     String?
-  creatorId   String
-  verified    Boolean  @default(false)
-  feature     Boolean  @default(false)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  creator     User     @relation(fields: [creatorId], references: [id])
-  avatar      Photo?   @relation("avatar", fields: [avatarId], references: [id])
-  banner      Photo?   @relation("banner", fields: [bannerId], references: [id])
-  network     Network
-  nfts        NFT[]
-  stats       Stat[]
+  id        String   @id @unique
+  name      String
+  address   String   @unique
+  supply    Int
+  avatarId  String?  @unique
+  bannerId  String?  @unique
+  desc      String?
+  website   String?
+  twitter   String?
+  discord   String?
+  creatorId String
+  verified  Boolean  @default(false)
+  feature   Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  creator   User     @relation(fields: [creatorId], references: [id])
+  avatar    Photo?   @relation("avatar", fields: [avatarId], references: [id])
+  banner    Photo?   @relation("banner", fields: [bannerId], references: [id])
+  network   Network
+  nfts      NFT[]
+  stats     Stat[]
 }
 
 model NFT {
@@ -296,7 +303,7 @@ model Notification {
   id           String           @id @unique
   userId       String
   type         NotificationType
-  description String?
+  description  String?
   activityId   String           @unique
   acknowledged Boolean
   createdAt    DateTime         @default(now())

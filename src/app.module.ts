@@ -19,6 +19,7 @@ import { HealthModule } from './health'
 import { PrismaModule } from './prisma'
 import { LikeModule } from '@modules/like'
 import { HideModule } from '@modules/hide'
+import { ScheduleModule } from '@nestjs/schedule'
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { HideModule } from '@modules/hide'
       isGlobal: true,
       load: [configuration]
     }),
+    ScheduleModule.forRoot(),
     ActivityModule,
     AuthModule,
     CollectionModule,

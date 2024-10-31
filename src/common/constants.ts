@@ -13,6 +13,17 @@ export const networks: Record<
   }
 }
 
+export const CONTRACT_NAME = {
+  INKARA_NFT: 'InkaraNFT',
+  INKARA_REWARD: 'InkaraReward',
+  INKARA_BADGE: 'InkaraBadge',
+  INKARA_MARKETPLACE: 'InkaraMarketplace',
+  INKARA_AUCTION: 'InkaraAuction',
+  INKARA_EVENT: 'InkaraEvent',
+  INKARA_DAO: 'InkaraDAO',
+  INKARA_GAME: 'InkaraGame'
+}
+
 export const NETWORK_STATUS_MESSAGE = {
   EMPTY: 'Empty',
   INVALID: 'Invalid response',

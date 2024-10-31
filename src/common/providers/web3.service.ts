@@ -104,8 +104,14 @@ export class Web3Service {
 
   public getInkaraNftContract(
     network: Network
-  ): Contract<typeof INKARA_NFT_CONTRACT_ABI> {
+  ): Contract<typeof INKARA_REWARD_CONTRACT_ABI> {
     return this.inkaraNftContract[network]
+  }
+
+  public getInkaraRewardContract(
+    network: Network
+  ): Contract<typeof INKARA_NFT_CONTRACT_ABI> {
+    return this.inkaraRewardContract[network]
   }
 
   public async getPrivateIndex(mnemonic: string, index: number) {
