@@ -4,6 +4,8 @@ import {
   Body,
   Controller,
   Get,
+  HttpStatus,
+  HttpCode,
   Param,
   Post,
   Query,
@@ -12,6 +14,7 @@ import {
 import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger'
 import { CurrentUser, Public } from '@common/decorators'
 import { AccessTokenGuard } from '@common/guards'
+import { onError, onSuccess, type Option } from '@common/response'
 import { ListingStatus, User } from '@prisma/client'
 import { CreateListingDto } from '../dto/create-listing.dto'
 import { ListingService } from '../services/listing.service'
@@ -28,72 +31,121 @@ export class ListingController {
   @ApiOperation({ summary: 'Get all listings' })
   @Public()
   @Get()
-  async getAllListings() {
-    return this.listingService.getListings({
-      where: { status: ListingStatus.ACTIVE },
-      include: {
-        seller: true,
-        nft: {
-          include: {
-            owner: true
+  @HttpCode(HttpStatus.OK)
+  async getAllListings(): Promise<Option<any>> {
+    try {
+      const res = this.listingService.getListings({
+        where: { status: ListingStatus.ACTIVE },
+        include: {
+          seller: true,
+          nft: {
+            include: {
+              owner: true
+            }
           }
         }
-      }
-    })
+      })
+      return onSuccess(res)
+    } catch (error) {
+      return onError(error)
+    }
   }
 
   @ApiOperation({ summary: 'Get listings by user', description: 'forbidden' })
   @UseGuards(AccessTokenGuard)
   @Get('user')
+  @HttpCode(HttpStatus.OK)
   async getUserListings(
     @CurrentUser() user: User,
     @Query() pagination: PaginationParams
-  ) {
-    return await this.listingService.getLisitingsByUser(user.id, pagination)
+  ): Promise<Option<any>> {
+    try {
+      const res = await this.listingService.getLisitingsByUser(
+        user.id,
+        pagination
+      )
+      return onSuccess(res)
+    } catch (error) {
+      return onError(error)
+    }
   }
 
   @ApiOperation({ summary: 'Get listing by nft id', description: 'public' })
   @Public()
   @Get('nft/:id')
-  async getListingsByNftId(@Param('id') id: string) {
-    return this.listingService.getListing({
-      where: { nftId: id, status: ListingStatus.ACTIVE }
-    })
+  async getListingsByNftId(@Param('id') id: string): Promise<Option<any>> {
+    try {
+      const res = this.listingService.getListing({
+        where: { nftId: id, status: ListingStatus.ACTIVE }
+      })
+      return onSuccess(res)
+    } catch (error) {
+      return onError(error)
+    }
   }
 
   @ApiOperation({ summary: 'Get listing by id' })
   @Public()
   @Get(':id')
-  async getListingById(@Param('id') id: string) {
-    return this.listingService.getListing({
-      where: { id, status: ListingStatus.ACTIVE }
-    })
+  @HttpCode(HttpStatus.OK)
+  async getListingById(@Param('id') id: string): Promise<Option<any>> {
+    try {
+      const res = this.listingService.getListing({
+        where: { id, status: ListingStatus.ACTIVE }
+      })
+      return onSuccess(res)
+    } catch (error) {
+      return onError(error)
+    }
   }
 
   @ApiOperation({ summary: 'List nft', description: 'forbidden' })
   @ApiBody({ type: CreateListingDto })
   @UseGuards(AccessTokenGuard)
   @Post()
+  @HttpCode(HttpStatus.OK)
   async createListing(
     @CurrentUser() user: User,
     @Body() data: CreateListingDto
-  ) {
-    return this.listingService.createListing(user.id, data)
+  ): Promise<Option<any>> {
+    try {
+      const res = this.listingService.createListing(user.id, data)
+      return onSuccess(res)
+    } catch (error) {
+      return onError(error)
+    }
   }
 
   @ApiOperation({ summary: 'Cancel nft', description: 'forbidden' })
   @ApiBody({ type: ListingDto })
   @UseGuards(AccessTokenGuard)
   @Post('cancel')
-  async cancelListing(@CurrentUser() user: User, @Body() data: ListingDto) {
-    return this.listingService.cancelListing(user.id, data)
+  @HttpCode(HttpStatus.OK)
+  async cancelListing(
+    @CurrentUser() user: User,
+    @Body() data: ListingDto
+  ): Promise<Option<any>> {
+    try {
+      const res = this.listingService.cancelListing(user.id, data)
+      return onSuccess(res)
+    } catch (error) {
+      return onError(error)
+    }
   }
 
   @ApiOperation({ summary: 'Buy nft', description: 'forbidden' })
   @ApiBody({ type: ListingDto })
   @UseGuards(AccessTokenGuard)
   @Post('buy')
-  async buyListing(@CurrentUser() user: User, @Body() data: ListingDto) {
-    return this.listingService.buyListing(user.id, data)
+  async buyListing(
+    @CurrentUser() user: User,
+    @Body() data: ListingDto
+  ): Promise<Option<any>> {
+    try {
+      const res = this.listingService.buyListing(user.id, data)
+      return onSuccess(res)
+    } catch (error) {
+      return onError(error)
+    }
   }
 }

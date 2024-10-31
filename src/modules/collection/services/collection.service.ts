@@ -22,7 +22,7 @@ export class CollectionService {
     { contains }: SearchParams,
     { period }: FilterParams,
     { offset = 1, startId = 0, limit }: PaginationParams
-  ) {
+  ): Promise<any> {
     const order = sortAscending === 'asc' ? 1 : -1
 
     const start = startId * offset

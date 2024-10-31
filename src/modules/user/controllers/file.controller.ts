@@ -15,6 +15,7 @@ import { ApiBody, ApiConsumes, ApiOperation, ApiTags } from '@nestjs/swagger'
 import { FileInterceptor } from '@nestjs/platform-express'
 import { Public } from '@common/decorators'
 import { AccessTokenGuard } from '@common/guards'
+import { onError, onSuccess, type Option } from '@common/response'
 import { FileService } from '../services'
 import { UploadFileDto } from '../dto/upload-file.dto'
 
@@ -31,16 +32,30 @@ export class FileController {
   @UseGuards(AccessTokenGuard)
   @Post()
   @UseInterceptors(FileInterceptor('file'))
-  async createPhoto(@UploadedFile() file: Express.Multer.File) {
-    return this.fileService.createPhoto(file)
+  @HttpCode(HttpStatus.OK)
+  async createPhoto(
+    @UploadedFile() file: Express.Multer.File
+  ): Promise<Option<any>> {
+    try {
+      const res = this.fileService.createPhoto(file)
+      return onSuccess(res)
+    } catch (error) {
+      return onError(error)
+    }
   }
 
   @ApiOperation({ summary: 'Get photo by Id' })
   @Public()
   @Get(':photoId')
   @HttpCode(HttpStatus.OK)
-  async getPhotoById(@Param('photoId') photoId: string) {
-    return this.fileService.getPhotoById(photoId)
+  @HttpCode(HttpStatus.OK)
+  async getPhotoById(@Param('photoId') photoId: string): Promise<Option<any>> {
+    try {
+      const res = this.fileService.getPhotoById(photoId)
+      return onSuccess(res)
+    } catch (error) {
+      return onError(error)
+    }
   }
 
   @ApiOperation({ summary: 'Update photo by uploading again' })
@@ -49,10 +64,16 @@ export class FileController {
   @UseGuards(AccessTokenGuard)
   @Post(':photoId')
   @UseInterceptors(FileInterceptor('file'))
+  @HttpCode(HttpStatus.OK)
   async updatePhotoById(
     @Param('photoId') photoId: string,
     @UploadedFile() file: Express.Multer.File
-  ) {
-    return this.fileService.updatePhotoById(photoId, file)
+  ): Promise<Option<any>> {
+    try {
+      const res = this.fileService.updatePhotoById(photoId, file)
+      return onSuccess(res)
+    } catch (error) {
+      return onError(error)
+    }
   }
 }

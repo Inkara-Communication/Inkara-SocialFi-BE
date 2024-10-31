@@ -7,12 +7,15 @@ import {
   Param,
   Get,
   Query,
-  UseGuards
+  UseGuards,
+  HttpCode,
+  HttpStatus
 } from '@nestjs/common'
 import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger'
 import { Collection, User } from '@prisma/client'
 import { AccessTokenGuard } from '@common/guards'
 import { CurrentUser, Public } from '@common/decorators'
+import { onError, onSuccess, type Option } from '@common/response'
 import { CollectionService } from '../services/collection.service'
 import { CreateCollectionDto } from '../dto/create-collection.dto'
 import { PaginationParams } from '@common/dto/pagenation-params.dto'
@@ -30,56 +33,92 @@ export class CollectionController {
   @ApiOperation({ summary: 'Find all collections' })
   @Public()
   @Get()
+  @HttpCode(HttpStatus.OK)
   async getCollections(
     @Query() sort: SortParams,
     @Query() search: SearchParams,
     @Query() filter: FilterParams,
     @Query() pagination: PaginationParams
-  ): Promise<Collection[]> {
-    return await this.collectionService.getCollections(
-      sort,
-      search,
-      filter,
-      pagination
-    )
+  ): Promise<Option<Collection[]>> {
+    try {
+      const res = await this.collectionService.getCollections(
+        sort,
+        search,
+        filter,
+        pagination
+      )
+      return onSuccess(res)
+    } catch (error) {
+      return onError(error)
+    }
   }
 
   @ApiOperation({ summary: 'Find Collection by id' })
   @Public()
   @Get('id/:id')
-  async getCollection(@Param('id') id: string) {
-    return await this.collectionService.getCollection({ where: { id } })
+  @HttpCode(HttpStatus.OK)
+  async getCollection(@Param('id') id: string): Promise<Option<any>> {
+    try {
+      const res = await this.collectionService.getCollection({ where: { id } })
+      return onSuccess(res)
+    } catch (error) {
+      return onError(error)
+    }
   }
 
   @ApiOperation({ summary: 'Get top collections' })
   @Public()
   @Get('top')
+  @HttpCode(HttpStatus.OK)
   async getTopCollections(
     @Query() filter: FilterParams
-  ): Promise<Collection[]> {
-    return await this.collectionService.getTopCollections(filter)
+  ): Promise<Option<Collection[]>> {
+    try {
+      const res = await this.collectionService.getTopCollections(filter)
+      return onSuccess(res)
+    } catch (error) {
+      return onError(error)
+    }
   }
 
   @ApiOperation({ summary: 'Get notable collections' })
   @Get('notable')
-  async getNotableCollections() {
-    return await this.collectionService.getNotableCollections()
+  @HttpCode(HttpStatus.OK)
+  async getNotableCollections(): Promise<Option<any>> {
+    try {
+      const res = await this.collectionService.getNotableCollections()
+      return onSuccess(res)
+    } catch (error) {
+      return onError(error)
+    }
   }
 
   @ApiOperation({ summary: 'Get featured collections' })
   @Get('feature')
-  async getFeaturedCollections() {
-    return await this.collectionService.getFeaturedCollections()
+  @HttpCode(HttpStatus.OK)
+  async getFeaturedCollections(): Promise<Option<any>> {
+    try {
+      const res = await this.collectionService.getFeaturedCollections()
+      return onSuccess(res)
+    } catch (error) {
+      return onError(error)
+    }
   }
 
   @ApiOperation({ summary: 'Create collection', description: 'forbidden' })
   @ApiBody({ type: CreateCollectionDto })
   @UseGuards(AccessTokenGuard)
   @Post()
+  @HttpCode(HttpStatus.OK)
   async createCollection(
     @CurrentUser() user: User,
     @Body() data: CreateCollectionDto
-  ) {
-    return await this.collectionService.createCollection(user.id, data)
+  ): Promise<Option<any>> {
+    try {
+      const res = await this.collectionService.createCollection(user.id, data)
+      return onSuccess(res)
+    } catch (error) {
+      return onError(error)
+    }
   }
 }

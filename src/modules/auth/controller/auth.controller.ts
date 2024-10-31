@@ -1,3 +1,5 @@
+//auth.controller.ts
+
 import {
   Body,
   Controller,
@@ -11,6 +13,7 @@ import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger'
 import { CurrentUser, Public } from '@common/decorators'
 import { AccessTokenGuard, RefreshTokenGuard } from '@common/guards'
 import { IPayloadUserJwt, IRequestWithUser } from '@common/interfaces'
+import { onError, onSuccess, type Option } from '@common/response'
 import { SigninDto } from '@modules/auth/dto/signin.dto'
 import {
   VerifyGoogleInput,
@@ -32,8 +35,13 @@ export class AuthController {
   @Public()
   @Post('signin')
   @HttpCode(HttpStatus.OK)
-  async signIn(@Body() data: SigninDto): Promise<any> {
-    return await this.authService.signIn(data)
+  async signIn(@Body() data: SigninDto): Promise<Option<any>> {
+    try {
+      const res = await this.authService.signIn(data)
+      return onSuccess(res)
+    } catch (error) {
+      return onError(error)
+    }
   }
 
   @ApiOperation({ summary: 'Google Sign-In Verification' })
@@ -41,16 +49,26 @@ export class AuthController {
   @Public()
   @Post('verify-google')
   @HttpCode(HttpStatus.OK)
-  async verifyGoogle(@Body() data: VerifyGoogleInput): Promise<User> {
-    return await this.authService.VerifyGoogle(data)
+  async verifyGoogle(@Body() data: VerifyGoogleInput): Promise<Option<any>> {
+    try {
+      const res = await this.authService.VerifyGoogle(data)
+      return onSuccess(res)
+    } catch (error) {
+      return onError(error)
+    }
   }
 
   @ApiOperation({ summary: 'Generate Wallet Address from Mnemonic' })
   @Post('generate-mnemonic')
   // @UseGuards(AccessTokenGuard)
   @HttpCode(HttpStatus.OK)
-  async generateMnemonic(): Promise<string> {
-    return this.authService.createWallet()
+  async generateMnemonic(): Promise<Option<any>> {
+    try {
+      const res = this.authService.createWallet()
+      return onSuccess(res)
+    } catch (error) {
+      return onError(error)
+    }
   }
 
   @ApiOperation({ summary: 'Generate Wallet Address from Mnemonic' })
@@ -60,48 +78,58 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   async generateAddress(
     @Body() data: ListAddressIndexInput
-  ): Promise<string[]> {
-    return await this.authService.getAddressIndexWallet(data)
+  ): Promise<Option<string[]>> {
+    try {
+      const res = await this.authService.getAddressIndexWallet(data)
+      return onSuccess(res)
+    } catch (error) {
+      return onError(error)
+    }
   }
 
   @ApiOperation({ summary: 'Sign out' })
   @Post('signout')
   @UseGuards(AccessTokenGuard)
   @HttpCode(HttpStatus.OK)
-  async signout(
-    @Request() req: IRequestWithUser
-  ): Promise<{ message: string }> {
-    await this.authService.signout(req.user.id)
-
-    return { message: 'success' }
+  async signout(@Request() req: IRequestWithUser): Promise<Option<any>> {
+    try {
+      const res = await this.authService.signout(req.user.id)
+      return onSuccess(res)
+    } catch (error) {
+      return onError(error)
+    }
   }
 
   @ApiOperation({ summary: 'Refresh token' })
   @UseGuards(RefreshTokenGuard)
   @Post('refresh')
   @HttpCode(HttpStatus.OK)
-  async refreshTokens(@Request() req: IRequestWithUser): Promise<any> {
-    const { user } = req
-    const refreshToken = req.get('Authorization').replace('Bearer', '').trim()
-    const payload: IPayloadUserJwt = {
-      id: user.id,
-      walletAddress: user.walletAddress
+  async refreshTokens(@Request() req: IRequestWithUser): Promise<Option<any>> {
+    try {
+      const { user } = req
+      const refreshToken = req.get('Authorization').replace('Bearer', '').trim()
+      const payload: IPayloadUserJwt = {
+        id: user.id,
+        walletAddress: user.walletAddress
+      }
+      const res = await this.authService.refreshTokens(payload, refreshToken)
+      return onSuccess(res)
+    } catch (error) {
+      return onError(error)
     }
-    const authToken = await this.authService.refreshTokens(
-      payload,
-      refreshToken
-    )
-
-    return authToken
   }
 
   @ApiOperation({ summary: 'Validate token', description: 'forbidden' })
   @Post('validate')
   @UseGuards(AccessTokenGuard)
   @HttpCode(HttpStatus.OK)
-  async validateToken(@CurrentUser() user: User): Promise<User> {
-    if (!user) throw new ForbiddenException('Unauthorized')
-    await this.authService.validateAccessToken(user.id)
-    return user
+  async validateToken(@CurrentUser() user: User): Promise<Option<User>> {
+    try {
+      if (!user) throw new ForbiddenException('Unauthorized')
+      await this.authService.validateAccessToken(user.id)
+      return onSuccess(user)
+    } catch (error) {
+      return onError(error)
+    }
   }
 }

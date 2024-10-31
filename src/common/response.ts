@@ -2,53 +2,33 @@ import { NETWORK_STATUS_MESSAGE } from './constants'
 
 /**
  * An interface representing a successful response from an API call.
- * @template T - The type of data returned in the response.
- * @property {T | any} data - The data returned in the response.
- * @property {string} message - A message describing the response.
- * @property {boolean} success - A boolean indicating whether the API call was successful.
- * @property {number | undefined} count - The number of items returned in the response.
- * @property {number | undefined} total - The total number of items available.
  */
 interface SuccessResponse<T> {
   data: T | any
   message: string
   success: boolean
   count?: number
-  total?: number
 }
 
 /**
  * Defines the structure of an error response object.
- * @interface ErrorResponse
- * @property {string} message - A message describing the error.
- * @property {boolean} success - A boolean indicating whether the request was successful or not.
- * @property {any} [data] - Optional data to include with the error response.
  */
 interface ErrorResponse {
   message: string
   success: boolean
   data?: any
 }
+
 /**
  * A union type that represents either a successful response or an error response.
- * @template T - The type of the data returned in a successful response.
- * @typedef {SuccessResponse<T> | ErrorResponse} Option<T>
  */
 type Option<T> = SuccessResponse<T> | ErrorResponse
 
 /**
- * Handles errors that occur during network requests and returns an error response object.
- * @param {any} error - the error object or message
- * @param {Controller} [controller] - the controller object to set the status code on
- * @returns An error response object with a message, success status, and data.
+ * Handles errors that occur during requests and returns an error response object.
  */
 function onError(error: any): ErrorResponse {
-  let msg = null
-  if (typeof error === 'object') {
-    msg = error.message
-  } else {
-    msg = error
-  }
+  const msg = error.message || NETWORK_STATUS_MESSAGE.INTERNAL_SERVER_ERROR
   return {
     message: msg,
     success: false,
@@ -57,36 +37,14 @@ function onError(error: any): ErrorResponse {
 }
 
 /**
- * Returns a success response object with the given data and total count.
- * @param {T} [data] - The data to include in the response object.
- * @param {number} [total] - The total count of items in the response object.
- * @returns {SuccessResponse<T>} - A success response object with the given data and total count.
- * If the data is an array, the count property will be set to the length of the array.
- * If the data is not an array, the count property will be set to 1.
- * The message property will be set to "SUCCESS" if the data is not an empty array, and "EMPTY" otherwise.
+ * Returns a success response object with the given data.
  */
-function onSuccess<T = undefined | JSON>(
-  data?: T,
-  total?: number
-): SuccessResponse<T> {
-  if (Array.isArray(data)) {
-    return {
-      data,
-      success: true,
-      message:
-        data.length === 0
-          ? NETWORK_STATUS_MESSAGE.EMPTY
-          : NETWORK_STATUS_MESSAGE.SUCCESS,
-      count: data.length,
-      total
-    }
-  }
+function onSuccess<T>(data: T): SuccessResponse<T> {
   return {
     data,
     success: true,
     message: NETWORK_STATUS_MESSAGE.SUCCESS,
-    count: 1,
-    total
+    count: Array.isArray(data) ? data.length : 1
   }
 }
 

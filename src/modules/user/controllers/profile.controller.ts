@@ -1,9 +1,19 @@
 // profile.controller.ts
 
-import { Body, Controller, Get, Param, Patch, UseGuards } from '@nestjs/common'
+import {
+  Body,
+  Controller,
+  HttpCode,
+  HttpStatus,
+  Get,
+  Param,
+  Patch,
+  UseGuards
+} from '@nestjs/common'
 import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger'
 import { CurrentUser, Public } from '@common/decorators'
 import { AccessTokenGuard } from '@common/guards'
+import { onError, onSuccess, type Option } from '@common/response'
 import { User } from '@prisma/client'
 import { UpdateProfileDto } from '../dto/update-profile.dto'
 import { ProfileService } from '../services'
@@ -19,34 +29,52 @@ export class ProfileController {
   @ApiBody({ type: UpdateProfileDto })
   @UseGuards(AccessTokenGuard)
   @Patch()
+  @HttpCode(HttpStatus.OK)
   async updateProfile(
     @CurrentUser() user: User,
     @Body() profileDto: UpdateProfileDto
-  ) {
-    return this.profileService.updateProfile(user.id, profileDto)
+  ): Promise<Option<any>> {
+    try {
+      const res = this.profileService.updateProfile(user.id, profileDto)
+      return onSuccess(res)
+    } catch (error) {
+      return onError(error)
+    }
   }
 
   @ApiOperation({ summary: 'Get profile', description: 'forbidden' })
   @UseGuards(AccessTokenGuard)
   @Get()
-  async getProfile(@CurrentUser() user: User) {
-    return this.profileService.getProfile({
-      where: { userId: user.id },
-      include: {
-        avatar: true
-      }
-    })
+  @HttpCode(HttpStatus.OK)
+  async getProfile(@CurrentUser() user: User): Promise<Option<any>> {
+    try {
+      const res = this.profileService.getProfile({
+        where: { userId: user.id },
+        include: {
+          avatar: true
+        }
+      })
+      return onSuccess(res)
+    } catch (error) {
+      return onError(error)
+    }
   }
 
   @ApiOperation({ summary: 'Get profile by id' })
   @Public()
   @Get(':userId')
-  async getProfileById(@Param('userId') userId: string) {
-    return this.profileService.getProfile({
-      where: { userId },
-      include: {
-        avatar: true
-      }
-    })
+  @HttpCode(HttpStatus.OK)
+  async getProfileById(@Param('userId') userId: string): Promise<Option<any>> {
+    try {
+      const res = this.profileService.getProfile({
+        where: { userId },
+        include: {
+          avatar: true
+        }
+      })
+      return onSuccess(res)
+    } catch (error) {
+      return onError(error)
+    }
   }
 }

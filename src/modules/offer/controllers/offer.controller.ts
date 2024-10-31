@@ -3,6 +3,8 @@
 import {
   Body,
   Controller,
+  HttpCode,
+  HttpStatus,
   Get,
   Param,
   Post,
@@ -13,6 +15,7 @@ import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger'
 import { User } from '@prisma/client'
 import { CurrentUser, Public } from '@common/decorators'
 import { AccessTokenGuard } from '@common/guards'
+import { onError, onSuccess, type Option } from '@common/response'
 import { FilterParams } from '@common/dto/filter-params.dto'
 import { PaginationParams } from '@common/dto/pagenation-params.dto'
 import { OfferService } from '../services/offer.service'
@@ -32,17 +35,23 @@ export class OfferController {
   })
   @Public()
   @Get(':id')
-  async getOfferById(@Param('id') id: string) {
-    return this.offerService.getOffer({
-      where: {
-        id
-      },
-      include: {
-        nft: true,
-        seller: true,
-        buyer: true
-      }
-    })
+  @HttpCode(HttpStatus.OK)
+  async getOfferById(@Param('id') id: string): Promise<Option<any>> {
+    try {
+      const res = this.offerService.getOffer({
+        where: {
+          id
+        },
+        include: {
+          nft: true,
+          seller: true,
+          buyer: true
+        }
+      })
+      return onSuccess(res)
+    } catch (error) {
+      return onError(error)
+    }
   }
 
   @ApiOperation({
@@ -50,49 +59,92 @@ export class OfferController {
   })
   @Public()
   @Get('nft/:nftId')
-  async getOffersByNft(@Param('nftId') nftId: string) {
-    return await this.offerService.getOffers({
-      where: {
-        nftId
-      },
-      include: {
-        buyer: true
-      }
-    })
+  @HttpCode(HttpStatus.OK)
+  async getOffersByNft(@Param('nftId') nftId: string): Promise<Option<any>> {
+    try {
+      const res = await this.offerService.getOffers({
+        where: {
+          nftId
+        },
+        include: {
+          buyer: true
+        }
+      })
+      return onSuccess(res)
+    } catch (error) {
+      return onError(error)
+    }
   }
 
   @ApiOperation({ summary: 'Get offers by user', description: 'forbidden' })
   @UseGuards(AccessTokenGuard)
   @Get('user')
+  @HttpCode(HttpStatus.OK)
   async getUserListings(
     @CurrentUser() user: User,
     @Query() filter: FilterParams,
     @Query() pagination: PaginationParams
-  ) {
-    return await this.offerService.getOffersByUser(user.id, filter, pagination)
+  ): Promise<Option<any>> {
+    try {
+      const res = await this.offerService.getOffersByUser(
+        user.id,
+        filter,
+        pagination
+      )
+      return onSuccess(res)
+    } catch (error) {
+      return onError(error)
+    }
   }
 
   @ApiOperation({ summary: 'Create new offer', description: 'forbidden' })
   @ApiBody({ type: CreateOfferDto })
   @UseGuards(AccessTokenGuard)
   @Post()
-  async createOffer(@CurrentUser() actor: User, @Body() data: CreateOfferDto) {
-    return this.offerService.createOffer(actor.id, data)
+  @HttpCode(HttpStatus.OK)
+  async createOffer(
+    @CurrentUser() actor: User,
+    @Body() data: CreateOfferDto
+  ): Promise<Option<any>> {
+    try {
+      const res = this.offerService.createOffer(actor.id, data)
+      return onSuccess(res)
+    } catch (error) {
+      return onError(error)
+    }
   }
 
   @ApiOperation({ summary: 'Cancel offer', description: 'forbidden' })
   @ApiBody({ type: CancelOfferDto })
   @UseGuards(AccessTokenGuard)
   @Post('cancel')
-  async cancelOffer(@CurrentUser() actor: User, @Body() data: CancelOfferDto) {
-    return this.offerService.cancelOffer(actor.id, data)
+  @HttpCode(HttpStatus.OK)
+  async cancelOffer(
+    @CurrentUser() actor: User,
+    @Body() data: CancelOfferDto
+  ): Promise<Option<any>> {
+    try {
+      const res = this.offerService.cancelOffer(actor.id, data)
+      return onSuccess(res)
+    } catch (error) {
+      return onError(error)
+    }
   }
 
   @ApiOperation({ summary: 'Accept offer', description: 'forbidden' })
   @ApiBody({ type: AcceptOfferDto })
   @UseGuards(AccessTokenGuard)
   @Post('accept')
-  async acceptOffer(@CurrentUser() actor: User, @Body() data: AcceptOfferDto) {
-    return this.offerService.acceptOffer(actor.id, data)
+  @HttpCode(HttpStatus.OK)
+  async acceptOffer(
+    @CurrentUser() actor: User,
+    @Body() data: AcceptOfferDto
+  ): Promise<Option<any>> {
+    try {
+      const res = this.offerService.acceptOffer(actor.id, data)
+      return onSuccess(res)
+    } catch (error) {
+      return onError(error)
+    }
   }
 }
