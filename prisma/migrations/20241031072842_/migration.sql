@@ -219,7 +219,7 @@ CREATE TABLE "NFT" (
     "ownerId" TEXT NOT NULL,
     "minterId" TEXT NOT NULL,
     "collectionId" TEXT NOT NULL,
-    "tokenAddress" TEXT NOT NULL,
+    "contractAddress" TEXT NOT NULL,
     "tokenId" TEXT NOT NULL,
     "tokenUri" TEXT NOT NULL,
     "name" TEXT NOT NULL,

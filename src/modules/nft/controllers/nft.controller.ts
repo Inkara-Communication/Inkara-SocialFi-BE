@@ -135,7 +135,7 @@ export class NftController {
   })
   @ApiBody({ type: GetNftDto })
   @Public()
-  @Post('get')
+  @Post('nft-detail')
   @HttpCode(HttpStatus.OK)
   async getNft(@Body() data: GetNftDto): Promise<Option<any>> {
     try {

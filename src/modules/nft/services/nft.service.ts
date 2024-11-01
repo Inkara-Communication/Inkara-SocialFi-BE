@@ -359,7 +359,7 @@ export class NftService {
     { sortAscending, sortBy }: SortParams,
     { contains }: SearchParams,
     { filterBy }: FilterParams,
-    { offset = 1, limit = 20, startId = 0 }: PaginationParams
+    { offset = 1, limit = 10, startId = 0 }: PaginationParams
   ) {
     const order = sortAscending === 'asc' ? 'asc' : 'desc'
 
@@ -575,7 +575,7 @@ export class NftService {
                 id: this.generatorService.uuid(),
                 collectionId: data.collectionId,
                 creatorId: undefined,
-                tokenAddress: tokenData.tokenAddress,
+                contractAddress: tokenData.contractAddress,
                 tokenId: tokenData.tokenId,
                 tokenUri: tokenData.tokenUri,
                 slug: this.generatorService.generateSlug(tokenData.tokenId),

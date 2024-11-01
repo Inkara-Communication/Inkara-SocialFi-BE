@@ -304,7 +304,7 @@ export interface Metadata {
 }
 
 export interface TokenData {
-  tokenAddress: string
+  contractAddress: string
   tokenId: string
   tokenUri: string
   metadata: Metadata

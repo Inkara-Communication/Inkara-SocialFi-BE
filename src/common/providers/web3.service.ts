@@ -203,7 +203,7 @@ export class Web3Service {
     let tokenDatas: TokenData[] = {} as TokenData[]
     const rept = await this.getTransactionReceipt(network, txHash)
     try {
-      const tokenAddress = rept.to
+      const contractAddress = rept.to
       const eventId =
         this.web3[network].eth.abi.encodeEventSignature(MINTNFT_EVENT_ABI)
       const logs = rept.logs.filter(log => log.topics[0] === eventId)
@@ -220,7 +220,7 @@ export class Web3Service {
         tokenIds.map(async tokenId => {
           const contract = new this.web3.EMERALD.eth.Contract(
             INKARA_NFT_CONTRACT_ABI,
-            tokenAddress
+            contractAddress
           )
           const tokenUri = (await contract.methods
             .tokenURI(tokenId)
@@ -247,7 +247,7 @@ export class Web3Service {
             this.logger.error(e)
           }
           return {
-            tokenAddress,
+            contractAddress,
             tokenId,
             tokenUri,
             metadata

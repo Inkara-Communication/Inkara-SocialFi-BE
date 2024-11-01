@@ -206,31 +206,31 @@ model Collection {
 }
 
 model NFT {
-  id           String     @id @unique
-  ownerId      String
-  minterId     String
-  collectionId String
-  tokenAddress String
-  tokenId      String // #id value in nft name
-  tokenUri     String
-  name         String
-  image        String
-  attributes   Json
-  royalty      Int // permyriad value
-  slug         String?
-  nftType      NftType
-  NftStatus    NftStatus
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @updatedAt
-  collection   Collection @relation(fields: [collectionId], references: [id])
-  listing      Listing[]
-  offers       Offer[]
-  owner        User       @relation("owner", fields: [ownerId], references: [id])
-  minter       User       @relation("minter", fields: [minterId], references: [id])
-  activities   Activity[]
-  hides        Hide[]
-  likes        NftLike[]
-  event        Event[]
+  id              String     @id @unique
+  ownerId         String
+  minterId        String
+  collectionId    String
+  contractAddress String
+  tokenId         String // #id value in nft name
+  tokenUri        String
+  name            String
+  image           String
+  attributes      Json
+  royalty         Int // permyriad value
+  slug            String?
+  nftType         NftType
+  NftStatus       NftStatus
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+  collection      Collection @relation(fields: [collectionId], references: [id])
+  listing         Listing[]
+  offers          Offer[]
+  owner           User       @relation("owner", fields: [ownerId], references: [id])
+  minter          User       @relation("minter", fields: [minterId], references: [id])
+  activities      Activity[]
+  hides           Hide[]
+  likes           NftLike[]
+  event           Event[]
 
   EventParticipation EventParticipation[]
 

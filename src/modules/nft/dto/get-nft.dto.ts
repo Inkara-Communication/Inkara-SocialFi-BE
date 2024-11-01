@@ -11,11 +11,11 @@ export class GetNftDto {
   @ApiProperty({
     required: true,
     type: 'string',
-    description: 'Token address of the NFT'
+    description: 'Contract address of the NFT'
   })
   @IsString()
   @IsNotEmpty()
-  tokenAddress: string
+  contractAddress: string
 
   @ApiProperty({
     required: true,
