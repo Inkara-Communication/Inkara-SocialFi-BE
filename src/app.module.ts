@@ -20,6 +20,7 @@ import { PrismaModule } from './prisma'
 import { LikeModule } from '@modules/like'
 import { HideModule } from '@modules/hide'
 import { ScheduleModule } from '@nestjs/schedule'
+import { TransactionModule } from '@modules/transaction'
 
 @Module({
   imports: [
@@ -41,7 +42,8 @@ import { ScheduleModule } from '@nestjs/schedule'
     RedisModule,
     UserModule,
     LikeModule,
-    HideModule
+    HideModule,
+    TransactionModule
   ]
 })
 export class AppModule implements NestModule {

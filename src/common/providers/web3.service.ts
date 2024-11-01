@@ -110,18 +110,19 @@ export class Web3Service {
 
   async adminSign(
     network: Network,
-    privateKey: string,
     methodData: string,
     contractAddress: string
   ) {
-    const tx = {
+    const transaction = {
       to: contractAddress,
       data: methodData,
       gas: 500000
     }
 
+    const privateKey = this.configService.get('credential.ACCOUNT_PRIVATE_KEY')
+
     const signedTx = await this.web3[network].eth.accounts.signTransaction(
-      tx,
+      transaction,
       privateKey
     )
     if (signedTx.rawTransaction) {
@@ -133,6 +134,25 @@ export class Web3Service {
 
   async signAndSendTransaction(userSignature: string): Promise<any> {
     return await this.web3.EMERALD.eth.sendSignedTransaction(userSignature)
+  }
+
+  async createSignature(
+    network: Network,
+    methodData: string,
+    contractAddress: string,
+    privateKey: string
+  ): Promise<any> {
+    const transaction = {
+      to: contractAddress,
+      data: methodData,
+      gas: 500000
+    }
+
+    const signedTx = await this.web3[network].eth.accounts.signTransaction(
+      transaction,
+      privateKey
+    )
+    return signedTx
   }
 
   async signMessage(
