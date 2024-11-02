@@ -10,12 +10,12 @@ import {
   MINTNFT_EVENT_ABI,
   INKARA_TOKEN_CONTRACT_ABI,
   INKARA_NFT_CONTRACT_ABI,
-  INKARA_REWARD_CONTRACT_ABI
+  INKARA_BADGE_CONTRACT_ABI
 } from '@config/abi'
 import {
   INKARA_TOKEN_CONTRACT_ADDRESS,
   INKARA_NFT_CONTRACT_ADDRESS,
-  INKARA_REWARD_CONTRACT_ADDRESS
+  INKARA_BADGE_CONTRACT_ADDRESS
 } from '@config/address'
 import {
   // BuyOrderParameters,
@@ -42,9 +42,9 @@ export class Web3Service {
     Network,
     Contract<typeof INKARA_NFT_CONTRACT_ABI>
   >
-  private inkaraRewardContract: Record<
+  private inkaraBadgeContract: Record<
     Network,
-    Contract<typeof INKARA_REWARD_CONTRACT_ABI>
+    Contract<typeof INKARA_BADGE_CONTRACT_ABI>
   >
   constructor(
     private readonly configService: ConfigService,
@@ -78,10 +78,10 @@ export class Web3Service {
       )
     }
 
-    this.inkaraRewardContract = {
+    this.inkaraBadgeContract = {
       EMERALD: new this.web3.EMERALD.eth.Contract(
-        INKARA_REWARD_CONTRACT_ABI,
-        INKARA_REWARD_CONTRACT_ADDRESS
+        INKARA_BADGE_CONTRACT_ABI,
+        INKARA_BADGE_CONTRACT_ADDRESS
       )
     }
   }
@@ -155,14 +155,10 @@ export class Web3Service {
     return signedTx
   }
 
-  async signMessage(
-    user_address: string,
-    amount_withdraw: string,
-    nonce: string
-  ) {
+  async signMessage(user_address: string, action: string, nonce: string) {
     const messageHash = this.web3.EMERALD.utils.soliditySha3(
       user_address,
-      amount_withdraw,
+      action,
       nonce
     )
 
@@ -175,14 +171,14 @@ export class Web3Service {
 
   public getInkaraNftContract(
     network: Network
-  ): Contract<typeof INKARA_REWARD_CONTRACT_ABI> {
+  ): Contract<typeof INKARA_NFT_CONTRACT_ABI> {
     return this.inkaraNftContract[network]
   }
 
-  public getInkaraRewardContract(
+  public getInkaraBadgeContract(
     network: Network
-  ): Contract<typeof INKARA_NFT_CONTRACT_ABI> {
-    return this.inkaraRewardContract[network]
+  ): Contract<typeof INKARA_BADGE_CONTRACT_ABI> {
+    return this.inkaraBadgeContract[network]
   }
 
   public async getPrivateIndex(mnemonic: string, index: number) {

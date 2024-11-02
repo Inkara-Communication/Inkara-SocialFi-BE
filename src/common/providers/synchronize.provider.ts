@@ -98,46 +98,46 @@ export class SynchronizeService {
     }
   }
 
-  async synchronizeReward() {
-    const inkaraRewardContract = this.web3Service.getInkaraRewardContract(
+  async synchronizeBadge() {
+    const inkaraBadgeContract = this.web3Service.getInkaraBadgeContract(
       Network.EMERALD
     )
 
     const contract = await this.prismaService.contract.findFirst({
-      where: { contractName: CONTRACT_NAME.INKARA_REWARD }
+      where: { contractName: CONTRACT_NAME.INKARA_BADGE }
     })
 
     if (!contract) {
       await this.prismaService.contract.create({
         data: {
           id: this.generatorService.uuid(),
-          contractName: CONTRACT_NAME.INKARA_REWARD
+          contractName: CONTRACT_NAME.INKARA_BADGE
         }
       })
       globalVariable.isSyncingGetDataFromSmartContract = false
       return
     }
 
-    const lastBlockNumberReward = await this.getLastBlockNumber(contract.id)
+    const lastBlockNumberBadge = await this.getLastBlockNumber(contract.id)
 
-    const lastBlockNumberOnchainReward = Math.min(
+    const lastBlockNumberOnchainBadge = Math.min(
       Number(await this.web3Service.getBlockNumber(Network.EMERALD)),
-      lastBlockNumberReward + 100
+      lastBlockNumberBadge + 100
     )
 
     const getPastEventsConfig = {
-      fromBlock: lastBlockNumberReward,
-      toBlock: lastBlockNumberOnchainReward
+      fromBlock: lastBlockNumberBadge,
+      toBlock: lastBlockNumberOnchainBadge
     }
 
-    const eventNewReward = await inkaraRewardContract.getPastEvents(
+    const eventNewBadge = await inkaraBadgeContract.getPastEvents(
       'allEvents',
       getPastEventsConfig
     )
 
-    this.logger.log(`Synchronizing ${eventNewReward.length} Reward events`)
+    this.logger.log(`Synchronizing ${eventNewBadge.length} Badge events`)
 
-    const listNewReward = eventNewReward
+    const listNewBadge = eventNewBadge
       .sort(this.sortByTransactionIndex)
       .map((e: any) => ({
         user: e.returnValues.user,
@@ -145,27 +145,27 @@ export class SynchronizeService {
         transactionHash: e.transactionHash,
         blockNumber: e.blockNumber
       }))
-    const rewardTxHash: string[] = []
+    const badgeTxHash: string[] = []
 
-    rewardTxHash.push(...eventNewReward.map((e: any) => e.returnValues.tokenId))
+    badgeTxHash.push(...eventNewBadge.map((e: any) => e.returnValues.tokenId))
 
     await this.prismaService.transaction.create({
       data: {
         id: this.generatorService.uuid(),
         contractId: contract.id,
-        blockNumber: lastBlockNumberOnchainReward,
-        transactionHash: rewardTxHash.length > 0 ? rewardTxHash : []
+        blockNumber: lastBlockNumberOnchainBadge,
+        transactionHash: badgeTxHash.length > 0 ? badgeTxHash : []
       }
     })
 
-    this.logger.log(`Synchronized ${rewardTxHash.length} Reward transactions`)
+    this.logger.log(`Synchronized ${badgeTxHash.length} Badge transactions`)
 
-    for (const newReward of listNewReward) {
+    for (const newBadge of listNewBadge) {
       try {
-        // Logic xử lý cho Reward
-        console.log(newReward)
+        // Logic xử lý cho Badge
+        console.log(newBadge)
       } catch (error: any) {
-        this.logger.error(`Cannot insert Reward, error: ${error.message}`)
+        this.logger.error(`Cannot insert Badge, error: ${error.message}`)
       }
     }
   }
@@ -186,7 +186,7 @@ export class SynchronizeService {
 
     try {
       await this.synchronizeNFT()
-      await this.synchronizeReward()
+      await this.synchronizeBadge()
     } catch (error) {
       this.logger.error(`onJobGetDataFromSmartContract: ${error.message}`)
     } finally {

@@ -6,6 +6,7 @@ import { Network } from '@prisma/client'
 import { ethers } from 'ethers'
 import { bigNumber } from '@common/helper'
 import { CreateSignatureDto } from '../dto/create-signature.dto'
+import { signMessageDto } from '../dto/sign-message.dto'
 
 @Injectable()
 export class TransactionService {
@@ -47,16 +48,9 @@ export class TransactionService {
     return allowanceEther
   }
 
-  async signMessage(
-    user_address: string,
-    amount_withdraw: string,
-    nonce: string
-  ) {
-    return await this.web3Service.signMessage(
-      user_address,
-      amount_withdraw,
-      nonce
-    )
+  async signMessage(data: signMessageDto) {
+    const { userAddress, action, nonce } = data
+    return await this.web3Service.signMessage(userAddress, action, nonce)
   }
 
   async getBlockNumber() {

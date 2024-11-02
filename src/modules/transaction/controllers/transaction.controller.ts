@@ -13,6 +13,7 @@ import { ApiBody, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger'
 import { onError, onSuccess, type Option } from '@common/response'
 import { TransactionService } from '../services/transaction.service'
 import { CreateSignatureDto } from '../dto/create-signature.dto'
+import { signMessageDto } from '../dto/sign-message.dto'
 
 const moduleName = 'transaction'
 
@@ -54,6 +55,43 @@ export class TransactionController {
   ): Promise<Option<any>> {
     try {
       const res = await this.transactionService.createSignature(data)
+      return onSuccess(res)
+    } catch (error) {
+      return onError(error)
+    }
+  }
+
+  @ApiOperation({
+    summary: 'sign message data',
+    description: 'forbidden'
+  })
+  @ApiBody({ type: signMessageDto })
+  @ApiOkResponse({
+    description: 'Example of api response',
+    schema: {
+      example: {
+        data: {
+          messageHash:
+            '0xf96fe01583afc14e8eb0b43c4f7cecb320fe13a4db9fb7f66bc205b7623daa5b',
+          v: '0x37948',
+          r: '0x2bffa91cf196e7e5cdbbb251957c642e46ef89796711b4ebf2a277b37246e47',
+          s: '0x629dec7401446416f9a4703828b22251df3a93515af00537a5f106f7ced98eee',
+          rawTransaction:
+            '0xf88c428507731940008307a121941767f854ed4f4f6ae3d5746aa2b857a14c0bbf4f80a44b306a6100000000000000000000000021cd1832c48247c3f3a72b8629cb1ca3e8dd69a373027128a002bfff91cf499e7e5cdbbb261957c642e46ef99796715b4ebf2d177437249e47a0619dec7401446426f9b4703828b22251cd5a93515af00537a8f106f7ced58eee',
+          transactionHash:
+            '0xae20469816b9b5db25b35841327d7b736c315f17ee8785325317e1d44d40c1a2'
+        },
+        success: true,
+        message: 'Success',
+        count: 1
+      }
+    }
+  })
+  @Post('message-signature')
+  @HttpCode(HttpStatus.OK)
+  async signMessage(@Body() data: signMessageDto): Promise<Option<any>> {
+    try {
+      const res = await this.transactionService.signMessage(data)
       return onSuccess(res)
     } catch (error) {
       return onError(error)

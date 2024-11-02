@@ -15,7 +15,6 @@ export const networks: Record<
 
 export const CONTRACT_NAME = {
   INKARA_NFT: 'InkaraNFT',
-  INKARA_REWARD: 'InkaraReward',
   INKARA_BADGE: 'InkaraBadge',
   INKARA_MARKETPLACE: 'InkaraMarketplace',
   INKARA_AUCTION: 'InkaraAuction',
