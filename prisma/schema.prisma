@@ -11,7 +11,7 @@ datasource db {
 model User {
   id                 String               @id @unique
   username           String               @unique
-  walletAddress      String               @unique
+  address            String               @unique
   email              String               @unique
   nonce              String
   mnemonic           String
@@ -41,9 +41,10 @@ model User {
   sentMessages       Message[]            @relation("SentMessages")
   receivedMessages   Message[]            @relation("ReceivedMessages")
   EventParticipation EventParticipation[]
+  Transaction        Transaction[]
 
   @@index([username])
-  @@index([walletAddress])
+  @@index([address])
   @@index([email])
 }
 
@@ -169,16 +170,19 @@ model FileEntity {
 model Contract {
   id           String        @id @unique
   contractName String        @unique
+  network      Network
   transactions Transaction[]
 }
 
 model Transaction {
   id              String   @id @unique
   contractId      String
-  transactionHash String[]
+  transactionHash String   @unique
   blockNumber     Int
+  userAddress     String
   createdAt       DateTime @default(now())
   contract        Contract @relation(fields: [contractId], references: [id])
+  userFrom        User     @relation(fields: [userAddress], references: [address])
 }
 
 model Collection {

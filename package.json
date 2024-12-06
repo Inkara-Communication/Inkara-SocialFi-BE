@@ -13,6 +13,7 @@
     "start:debug": "nest start --debug --watch",
     "start:prod": "yarn build && yarn prisma:migrate:deploy && node ./dist/src/main",
     "start:db:dev": "yarn prisma:generate && yarn prisma:migrate:dev",
+    "dev:db": "docker compose -f ./docker-compose.local.yml up -d --build",
     "prisma:generate": "npx prisma generate",
     "prisma:migrate:reset": "prisma migrate reset --preview-feature",
     "prisma:migrate:dev": "prisma migrate dev --name autoMigrate --preview-feature",
