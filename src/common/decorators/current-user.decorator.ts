@@ -8,7 +8,7 @@ import {
 
 export interface IUserFromRequest {
   id: string
-  walletAddress: string
+  address: string
 }
 
 export const CurrentUser = createParamDecorator(

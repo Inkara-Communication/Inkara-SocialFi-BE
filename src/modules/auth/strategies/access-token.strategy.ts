@@ -20,9 +20,9 @@ export class AccessTokenStrategy extends PassportStrategy(
     })
   }
 
-  async validate({ walletAddress }: IPayloadUserJwt) {
+  async validate({ address }: IPayloadUserJwt) {
     const user = await this.userService.getUser({
-      where: { walletAddress },
+      where: { address },
       include: {
         profile: true
       }

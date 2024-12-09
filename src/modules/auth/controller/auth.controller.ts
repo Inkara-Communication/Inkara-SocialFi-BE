@@ -110,7 +110,7 @@ export class AuthController {
       const refreshToken = req.get('Authorization').replace('Bearer', '').trim()
       const payload: IPayloadUserJwt = {
         id: user.id,
-        walletAddress: user.walletAddress
+        address: user.address
       }
       const res = await this.authService.refreshTokens(payload, refreshToken)
       return onSuccess(res)

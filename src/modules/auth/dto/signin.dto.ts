@@ -11,7 +11,7 @@ export class SigninDto {
   })
   @IsString()
   @IsNotEmpty()
-  walletAddress: string
+  address: string
 
   @ApiProperty({
     required: true,

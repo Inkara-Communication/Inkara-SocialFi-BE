@@ -15,6 +15,18 @@ services:
     networks:
       - ${NETWORK}
 
+  redis:
+    container_name: inkara_redis
+    image: redis:latest
+    ports:
+      - '6379:6379'
+    environment:
+      TZ: 'Etc/UTC'
+    volumes:
+      - redis:/data
+    networks:
+      - ${NETWORK}
+
 networks:
   inkara_network:
     driver: bridge
@@ -22,3 +34,4 @@ networks:
 
 volumes:
   postgres:
+  redis:

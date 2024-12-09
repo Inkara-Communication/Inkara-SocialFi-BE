@@ -7,5 +7,5 @@ export interface IRequestWithUser extends Request {
 
 export interface IUserFromRequest {
   id: string
-  walletAddress: string
+  address: string
 }

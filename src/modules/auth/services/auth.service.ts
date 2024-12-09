@@ -43,11 +43,11 @@ export class AuthService {
     private readonly web3Service: Web3Service
   ) {}
 
-  async validateUser({ walletAddress }: SigninDto): Promise<boolean> {
+  async validateUser({ address }: SigninDto): Promise<boolean> {
     this.logger.log(`${'*'.repeat(20)} validateUser() ${'*'.repeat(20)}`)
-    this.logger.log(walletAddress)
+    this.logger.log(address)
     // const user = await this.prismaService.user.findUnique({
-    //   where: { walletAddress }
+    //   where: { address }
     // })
     // return this.tokenService.compare(password, user.password);
     return true
@@ -73,12 +73,12 @@ export class AuthService {
           encryptedMnemonic,
           0
         )
-        const walletAddress = new ethers.Wallet(privateKey).address
+        const address = new ethers.Wallet(privateKey).address
         user = await this.prismaService.user.create({
           data: {
             id: this.generatorService.uuid(),
             username: name,
-            walletAddress: walletAddress,
+            address: address,
             email,
             mnemonic: encryptedMnemonic,
             nonce: this.generatorService.generateRandomNonce(),
@@ -147,15 +147,15 @@ export class AuthService {
     }
   }
 
-  public async signIn({ walletAddress, signature }: SigninDto) {
+  public async signIn({ address, signature }: SigninDto) {
     const user = await this.userService.getUser({
-      where: { walletAddress }
+      where: { address }
     })
-    if (!user)
-      throw new BadRequestException('Provided walletAddress is invalid')
-
+    if (!user) {
+      throw new BadRequestException('Provided address is invalid')
+    }
     const [isValid, err] = await this.tokenService.verifySignature(
-      user.walletAddress,
+      user.address,
       user.nonce,
       signature
     )
@@ -168,7 +168,7 @@ export class AuthService {
 
     const authTokens = await this.generateAuthToken({
       id: user.id,
-      walletAddress: user.walletAddress
+      address: user.address
     })
     return authTokens
   }
@@ -246,7 +246,7 @@ export class AuthService {
   }
 
   public async refreshTokens(payload: IPayloadUserJwt, refreshToken: string) {
-    if (!payload.id || !payload.walletAddress)
+    if (!payload.id || !payload.address)
       throw new ForbiddenException('Access denied.')
 
     const user = await this.validateRefreshToken(payload.id, refreshToken)

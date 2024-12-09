@@ -152,7 +152,7 @@ export class ListingService {
       where: { id: userId }
     })
 
-    if (user.walletAddress !== order.orderParameters.offerer)
+    if (user.address !== order.orderParameters.offerer)
       throw new HttpException(
         'Invalid Transaction Sender',
         HttpStatus.EXPECTATION_FAILED
@@ -204,7 +204,7 @@ export class ListingService {
     const user = await this.prismaService.user.findUnique({
       where: { id: userId }
     })
-    if (user.walletAddress !== result.orderParameters.recipient)
+    if (user.address !== result.orderParameters.recipient)
       throw new HttpException(
         'Invalid Transaction Sender',
         HttpStatus.EXPECTATION_FAILED

@@ -45,7 +45,7 @@ export class TokenService {
   }
 
   async verifySignature(
-    walletAddress: string,
+    address: string,
     nonce: string,
     signature: string
   ): Promise<[boolean, string]> {
@@ -55,18 +55,15 @@ export class TokenService {
         signature: Buffer.from(signature.slice(2), 'hex')
       })
       this.logger.log(`RecoveredAddress is ${recoveredAddress}`)
-      return [
-        walletAddress.toLowerCase() === recoveredAddress.toLowerCase(),
-        ''
-      ]
+      return [address.toLowerCase() === recoveredAddress.toLowerCase(), '']
     } catch (err) {
       this.logger.log(`Invalid signature: ${err}`)
       return [false, err.message]
     }
   }
 
-  verifyWallet(walletAddress: string) {
-    const isValid = isHex(walletAddress) && walletAddress.length === 42
+  verifyWallet(address: string) {
+    const isValid = isHex(address) && address.length === 42
     if (!isValid)
       throw new BadRequestException('Provided wallet address is invalid')
     else return
