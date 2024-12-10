@@ -14,11 +14,12 @@ import { LikeModule } from '@modules/like'
 import { HideModule } from '@modules/hide'
 import { TransactionModule } from '@modules/transaction'
 
-import { CommonModule, LoggerMiddleware, InkRequestMiddleware } from './common'
+import { CommonModule } from './common'
 import { configuration } from './config'
 import { HealthModule } from './health'
 import { PrismaModule } from './prisma'
 import { RedisModule } from './redis'
+import { InkRequestMiddleware, LoggerMiddleware } from '@common/middleware'
 
 @Module({
   imports: [

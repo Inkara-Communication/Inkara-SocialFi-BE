@@ -3,6 +3,7 @@ import { PrismaService } from '@prisma/prisma.service'
 import { GeneratorService } from '@common/providers'
 import { FilterParams, UserFilterByOption } from '@common/dto/filter-params.dto'
 import { PaginationParams } from '@common/dto/pagenation-params.dto'
+import { LikeType } from '@prisma/client'
 
 @Injectable()
 export class LikeService {
@@ -14,16 +15,17 @@ export class LikeService {
   ) {}
 
   // Likes for NFT
-  async getNftLikesByUser(
+  async getListNftLikeByUser(
     userId: string,
     { filterBy }: FilterParams,
     { offset = 1, limit = 20, startId = 0 }: PaginationParams
   ) {
     switch (filterBy) {
       case UserFilterByOption.FAVORITE:
-        return await this.prismaService.nftLike.findMany({
+        return await this.prismaService.like.findMany({
           where: {
-            userId
+            userId,
+            type: LikeType.nft
           },
           skip: offset * startId,
           take: limit,
@@ -42,10 +44,11 @@ export class LikeService {
   }
 
   async getNftLikeByUser(userId: string, nftId: string) {
-    return await this.prismaService.nftLike.findFirst({
+    return await this.prismaService.like.findFirst({
       where: {
         userId,
-        nftId
+        nftId,
+        type: LikeType.nft
       },
       include: {
         nft: {
@@ -58,7 +61,7 @@ export class LikeService {
   }
 
   async createNftLike(userId: string, nftId: string) {
-    return await this.prismaService.nftLike.create({
+    return await this.prismaService.like.create({
       data: {
         id: this.generatorService.uuid(),
         user: {
@@ -70,15 +73,20 @@ export class LikeService {
           connect: {
             id: nftId
           }
-        }
+        },
+        type: LikeType.nft
       }
     })
   }
 
   async deleteNftLike(nftId: string, userId: string) {
     try {
-      const like = await this.prismaService.nftLike.findFirst({
-        where: { nftId, userId }
+      const like = await this.prismaService.like.findFirst({
+        where: {
+          nftId,
+          userId,
+          type: LikeType.nft
+        }
       })
       if (!like)
         throw new HttpException(
@@ -86,7 +94,7 @@ export class LikeService {
           HttpStatus.EXPECTATION_FAILED
         )
 
-      return await this.prismaService.nftLike.delete({
+      return await this.prismaService.like.delete({
         where: { id: like.id }
       })
     } catch (e) {
@@ -103,9 +111,10 @@ export class LikeService {
   ) {
     switch (filterBy) {
       case UserFilterByOption.FAVORITE:
-        return await this.prismaService.postLike.findMany({
+        return await this.prismaService.like.findMany({
           where: {
-            userId
+            userId,
+            type: LikeType.post
           },
           skip: offset * startId,
           take: limit,
@@ -115,7 +124,7 @@ export class LikeService {
           include: {
             post: {
               include: {
-                user: true // Thay thế `author` bằng `user` (hoặc trường phù hợp với mô hình Post)
+                user: true
               }
             }
           }
@@ -124,10 +133,11 @@ export class LikeService {
   }
 
   async getPostLikeByUser(userId: string, postId: string) {
-    return await this.prismaService.postLike.findFirst({
+    return await this.prismaService.like.findFirst({
       where: {
         userId,
-        postId
+        postId,
+        type: LikeType.post
       },
       include: {
         post: {
@@ -140,7 +150,7 @@ export class LikeService {
   }
 
   async createPostLike(userId: string, postId: string) {
-    return await this.prismaService.postLike.create({
+    return await this.prismaService.like.create({
       data: {
         id: this.generatorService.uuid(),
         user: {
@@ -152,15 +162,20 @@ export class LikeService {
           connect: {
             id: postId
           }
-        }
+        },
+        type: LikeType.post
       }
     })
   }
 
   async deletePostLike(postId: string, userId: string) {
     try {
-      const like = await this.prismaService.postLike.findFirst({
-        where: { postId, userId }
+      const like = await this.prismaService.like.findFirst({
+        where: {
+          postId,
+          userId,
+          type: LikeType.post
+        }
       })
       if (!like)
         throw new HttpException(
@@ -168,8 +183,11 @@ export class LikeService {
           HttpStatus.EXPECTATION_FAILED
         )
 
-      return await this.prismaService.postLike.delete({
-        where: { id: like.id }
+      return await this.prismaService.like.delete({
+        where: {
+          id: like.id,
+          type: LikeType.post
+        }
       })
     } catch (e) {
       this.logger.error(e)

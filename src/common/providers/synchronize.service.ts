@@ -4,6 +4,7 @@ import { Cron, CronExpression } from '@nestjs/schedule'
 import { Web3Service } from './web3.service'
 import { EventLog } from 'web3-eth-contract'
 import { GeneratorService } from './generator.service'
+import { Network } from '@prisma/client'
 
 const globalVariable: any = global
 
@@ -22,16 +23,30 @@ export class SynchronizeService {
   sortByTransactionIndex = (a: EventLog, b: EventLog) =>
     Number(a.transactionIndex) - Number(b.transactionIndex)
 
-  async getLastBlockNumber(contractId: string): Promise<number> {
-    const lastSync = await this.prismaService.transaction.findFirst({
-      where: { contractId },
-      orderBy: { blockNumber: 'desc' }
+  async fetchLastBlockForNetwork(network: Network): Promise<number> {
+    let syncRecord = await this.prismaService.synchronize.findFirst({
+      where: { network }
     })
-
-    return (lastSync?.blockNumber || 0) + 1
+    if (!syncRecord) {
+      syncRecord = await this.prismaService.synchronize.create({
+        data: { network, lastBlock: 169976741 }
+      })
+    }
+    return syncRecord.lastBlock
   }
 
-  @Cron(CronExpression.EVERY_5_SECONDS)
+  async updateLastBlockForNetwork(
+    network: Network,
+    lastBlock: number
+  ): Promise<void> {
+    await this.prismaService.synchronize.upsert({
+      where: { network },
+      update: { lastBlock },
+      create: { network, lastBlock }
+    })
+  }
+
+  @Cron(CronExpression.EVERY_10_SECONDS)
   async onJobGetDataFromSmartContract() {
     if (globalVariable.isSyncingGetDataFromSmartContract) return
     globalVariable.isSyncingGetDataFromSmartContract = true

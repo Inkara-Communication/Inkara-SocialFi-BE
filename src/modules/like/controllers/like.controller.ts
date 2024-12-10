@@ -40,7 +40,7 @@ export class LikeController {
     @Query() pagination: PaginationParams
   ): Promise<Option<any>> {
     try {
-      const res = await this.likeService.getNftLikesByUser(
+      const res = await this.likeService.getListNftLikeByUser(
         user.id,
         filter,
         pagination
