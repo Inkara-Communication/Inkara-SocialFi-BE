@@ -1,10 +1,8 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common'
 import { ConfigModule } from '@nestjs/config'
-import { RedisModule } from '@redis/redis.module'
+import { ScheduleModule } from '@nestjs/schedule'
 
-import { LoggerMiddleware } from '@common/middleware'
-import { InkRequestMiddleware } from '@common/middleware/ink-request.middleware'
-import { ActivityModule } from '@modules/activity'
+import { ActivityModule } from './modules'
 import { AuthModule } from '@modules/auth'
 import { CollectionModule } from '@modules/collection'
 import { ListingModule } from '@modules/listing'
@@ -12,15 +10,15 @@ import { UserModule } from '@modules/user'
 import { OfferModule } from '@modules/offer'
 import { NotificationModule } from '@modules/notification'
 import { NftModule } from '@modules/nft'
+import { LikeModule } from '@modules/like'
+import { HideModule } from '@modules/hide'
+import { TransactionModule } from '@modules/transaction'
 
-import { CommonModule } from './common'
+import { CommonModule, LoggerMiddleware, InkRequestMiddleware } from './common'
 import { configuration } from './config'
 import { HealthModule } from './health'
 import { PrismaModule } from './prisma'
-import { LikeModule } from '@modules/like'
-import { HideModule } from '@modules/hide'
-import { ScheduleModule } from '@nestjs/schedule'
-import { TransactionModule } from '@modules/transaction'
+import { RedisModule } from './redis'
 
 @Module({
   imports: [

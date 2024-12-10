@@ -48,6 +48,7 @@
   },
   "include": [
     "./src",
-    "./prisma"
+    "./prisma",
+    "./test"
   ]
 }

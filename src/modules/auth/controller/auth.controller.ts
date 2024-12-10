@@ -14,14 +14,10 @@ import { CurrentUser, Public } from '@common/decorators'
 import { AccessTokenGuard, RefreshTokenGuard } from '@common/guards'
 import { IPayloadUserJwt, IRequestWithUser } from '@common/interfaces'
 import { onError, onSuccess, type Option } from '@common/response'
-import { SigninDto } from '@modules/auth/dto/signin.dto'
-import {
-  VerifyGoogleInput,
-  ListAddressIndexInput
-} from '@modules/auth/dto/signin-google.dto'
+import { AuthService } from '@modules/auth/services'
+import { SignupDto, SigninDto } from '@modules/auth/dto'
 import { User } from '@prisma/client'
 import { ForbiddenException } from '../../../errors'
-import { AuthService } from '../services'
 
 const moduleName = 'auth'
 
@@ -29,6 +25,15 @@ const moduleName = 'auth'
 @Controller(moduleName)
 export class AuthController {
   constructor(private authService: AuthService) {}
+
+  @ApiOperation({ summary: 'Sign up' })
+  @ApiBody({ type: SignupDto })
+  @Public()
+  @Post('signup')
+  @HttpCode(HttpStatus.OK)
+  async signUp(@Body() signupDto: SignupDto) {
+    return this.authService.signUp(signupDto)
+  }
 
   @ApiOperation({ summary: 'Sign in' })
   @ApiBody({ type: SigninDto })
@@ -38,49 +43,6 @@ export class AuthController {
   async signIn(@Body() data: SigninDto): Promise<Option<any>> {
     try {
       const res = await this.authService.signIn(data)
-      return onSuccess(res)
-    } catch (error) {
-      return onError(error)
-    }
-  }
-
-  @ApiOperation({ summary: 'Google Sign-In Verification' })
-  @ApiBody({ type: VerifyGoogleInput })
-  @Public()
-  @Post('verify-google')
-  @HttpCode(HttpStatus.OK)
-  async verifyGoogle(@Body() data: VerifyGoogleInput): Promise<Option<any>> {
-    try {
-      const res = await this.authService.VerifyGoogle(data)
-      return onSuccess(res)
-    } catch (error) {
-      return onError(error)
-    }
-  }
-
-  @ApiOperation({ summary: 'Generate Wallet Address from Mnemonic' })
-  @Post('generate-mnemonic')
-  // @UseGuards(AccessTokenGuard)
-  @HttpCode(HttpStatus.OK)
-  async generateMnemonic(): Promise<Option<any>> {
-    try {
-      const res = this.authService.createWallet()
-      return onSuccess(res)
-    } catch (error) {
-      return onError(error)
-    }
-  }
-
-  @ApiOperation({ summary: 'Generate Wallet Address from Mnemonic' })
-  @ApiBody({ type: ListAddressIndexInput })
-  @UseGuards(AccessTokenGuard)
-  @Post('generate-address')
-  @HttpCode(HttpStatus.OK)
-  async generateAddress(
-    @Body() data: ListAddressIndexInput
-  ): Promise<Option<string[]>> {
-    try {
-      const res = await this.authService.getAddressIndexWallet(data)
       return onSuccess(res)
     } catch (error) {
       return onError(error)

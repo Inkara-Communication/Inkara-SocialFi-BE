@@ -19,31 +19,38 @@ Welcome to the NestJS NFT SocialFi project! This is a full-stack application bui
 
 1. Clone the repository:
 
-   ```sh
-   git clone https://github.com/sasuke0601/ink-backend
-   cd nestjs-nft-SocialFi
-  ```
-2. Install dependencies:
-  ```sh
-  yarn install
-  ```
-3. Set up your PostgreSQL database using Docker:
-  ```sh
-  docker-compose up -d
-  ```
-4. Set up your Prisma schema and generate the Prisma client:
-  ```sh
-  npx prisma migrate dev
-  npx prisma generate
-  ```
-5. Start the development server:
 ```sh
-yarn start:dev
+   git clone https://github.com/Inkara-Communication/Inkara-SocialFi-BE.git
+   cd Inkara-SocialFi-BE
+```
+
+2. Install dependencies:
+
+```sh
+  yarn install
+```
+
+3. Set up your PostgreSQL database using Docker:
+
+```sh
+  yarn dev:docker 
+```
+
+4. Set up your Prisma schema and generate the Prisma client:
+
+```sh
+  npx prisma generate
+```
+
+5. Start the development server:
+
+```sh
+  yarn start:dev
 ```
 
 # Usage
+
 - Register a new user account.
 - Log in to your account.
 - Create and manage your NFT collections.
 - Explore the SocialFi and participate in launchpad events.
-

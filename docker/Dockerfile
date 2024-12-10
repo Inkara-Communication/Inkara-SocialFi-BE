@@ -1,7 +1,7 @@
 FROM node:18-alpine
 
 # Create app directory
-WORKDIR /usr/src/kaine-be
+WORKDIR /usr/src/app
 
 # Install app dependencies
 # A wildcard is used to ensure both package.json AND package-lock.json are copied
@@ -15,5 +15,6 @@ RUN yarn install
 COPY . .
 RUN yarn build
 
-EXPOSE 3001
+EXPOSE 8080
+EXPOSE 6379
 CMD [ "yarn", "start" ]

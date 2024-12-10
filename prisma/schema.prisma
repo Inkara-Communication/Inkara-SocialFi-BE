@@ -9,15 +9,13 @@ datasource db {
 }
 
 model User {
-  id                 String               @id @unique @default(cuid())
+  id                 String               @id @unique
   username           String               @unique
   address            String               @unique
   role               Role                 @default(USER)
-  email              String               @unique
   nonce              String
-  mnemonic           String
-  isActive           Boolean              @default(true)
-  lastLoginAt        DateTime
+  isActive           Boolean              @default(false)
+  lastLoginAt        DateTime?
   createdAt          DateTime             @default(now())
   updatedAt          DateTime             @updatedAt
   profile            Profile?
@@ -29,8 +27,7 @@ model User {
   ownedNFTs          NFT[]                @relation("owner")
   createdNFTs        NFT[]                @relation("minter")
   hides              Hide[]
-  likes              PostLike[]
-  nftLikes           NftLike[]
+  likes              Like[]
   listings           Listing[]
   offers             Offer[]              @relation("seller")
   boughtOffers       Offer[]              @relation("buyer")
@@ -46,11 +43,10 @@ model User {
 
   @@index([username])
   @@index([address])
-  @@index([email])
 }
 
 model Session {
-  id        String   @id @unique @default(cuid())
+  id        String   @id @unique
   userId    String
   token     String   @unique
   createdAt DateTime @default(now())
@@ -59,7 +55,7 @@ model Session {
 }
 
 model Profile {
-  id                String      @id @unique @default(cuid())
+  id                String      @id @unique
   userId            String      @unique
   bio               String?
   avatarId          String?     @unique
@@ -78,7 +74,7 @@ model Profile {
 }
 
 model Photo {
-  id               String      @id @unique @default(cuid())
+  id               String      @id @unique
   url              String
   fileEntityId     String      @unique
   link             String?
@@ -91,7 +87,7 @@ model Photo {
 }
 
 model Post {
-  id        String     @id @unique @default(cuid())
+  id        String     @id @unique
   userId    String
   content   String
   mediaUrl  String?
@@ -99,31 +95,24 @@ model Post {
   updatedAt DateTime   @updatedAt
   user      User       @relation(fields: [userId], references: [id])
   comments  Comment[]
-  likes     PostLike[]
+  likes     Like[]
 }
 
-model PostLike {
-  id        String   @id @unique @default(cuid())
-  postId    String
+model Like {
+  id        String   @id @unique
+  postId    String?
+  nftId     String?
   userId    String
+  type      LikeType
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   user      User     @relation(fields: [userId], references: [id])
-  post      Post     @relation(fields: [postId], references: [id])
-}
-
-model NftLike {
-  id        String   @id @unique @default(cuid())
-  nftId     String
-  userId    String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  user      User     @relation(fields: [userId], references: [id])
-  nft       NFT      @relation(fields: [nftId], references: [id])
+  post      Post?     @relation(fields: [postId], references: [id])
+  nft       NFT?      @relation(fields: [nftId], references: [id])
 }
 
 model Comment {
-  id        String   @id @unique @default(cuid())
+  id        String   @id @unique
   postId    String
   userId    String
   content   String
@@ -134,7 +123,7 @@ model Comment {
 }
 
 model Follow {
-  id          String   @id @unique @default(cuid())
+  id          String   @id @unique
   followerId  String
   followingId String
   createdAt   DateTime @default(now())
@@ -144,7 +133,7 @@ model Follow {
 }
 
 model Message {
-  id         String   @id @unique @default(cuid())
+  id         String   @id @unique
   senderId   String
   receiverId String
   content    String
@@ -155,7 +144,7 @@ model Message {
 }
 
 model FileEntity {
-  id          String   @id @unique @default(cuid())
+  id          String   @id @unique
   fileName    String
   s3Path      String?
   ipfsPath    String?
@@ -195,7 +184,7 @@ model Transaction {
 }
 
 model Collection {
-  id        String   @id @unique @default(cuid())
+  id        String   @id @unique
   name      String
   address   String   @unique
   supply    Int
@@ -219,7 +208,7 @@ model Collection {
 }
 
 model NFT {
-  id              String     @id @unique @default(cuid())
+  id              String     @id @unique
   ownerId         String
   minterId        String
   collectionId    String
@@ -242,7 +231,7 @@ model NFT {
   minter          User       @relation("minter", fields: [minterId], references: [id])
   activities      Activity[]
   hides           Hide[]
-  likes           NftLike[]
+  likes           Like[]
   event           Event[]
 
   EventParticipation EventParticipation[]
@@ -253,7 +242,7 @@ model NFT {
 }
 
 model Listing {
-  id        String        @id @unique @default(cuid())
+  id        String        @id @unique
   nftId     String
   sellerId  String
   price     BigInt
@@ -270,7 +259,7 @@ model Listing {
 }
 
 model Offer {
-  id         String      @id @unique @default(cuid())
+  id         String      @id @unique
   nftId      String
   sellerId   String
   buyerId    String
@@ -287,7 +276,7 @@ model Offer {
 }
 
 model Activity {
-  id           String        @id @unique @default(cuid())
+  id           String        @id @unique
   nftId        String
   sellerId     String
   buyerId      String?
@@ -303,7 +292,7 @@ model Activity {
 }
 
 model Hide {
-  id        String   @id @unique @default(cuid())
+  id        String   @id @unique
   nftId     String
   userId    String
   createdAt DateTime @default(now())
@@ -313,7 +302,7 @@ model Hide {
 }
 
 model Notification {
-  id           String           @id @unique @default(cuid())
+  id           String           @id @unique
   userId       String
   type         NotificationType
   description  String?
@@ -326,7 +315,7 @@ model Notification {
 }
 
 model Stat {
-  id           String     @id @unique @default(cuid())
+  id           String     @id @unique
   collectionId String
   owners       Int
   listedItems  Int
@@ -342,7 +331,7 @@ model Stat {
 
 // need edit
 model Reward {
-  id                  String      @id @unique @default(cuid())
+  id                  String      @id @unique
   userId              String
   lastLoginDate       DateTime
   totalLoginDays      Int      @default(0)
@@ -359,7 +348,7 @@ model Reward {
 }
 
 model Event {
-  id           String               @id @unique @default(cuid())
+  id           String               @id @unique
   title        String
   description  String?
   status       EventStatus?
@@ -373,7 +362,7 @@ model Event {
 }
 
 model EventParticipation {
-  id        String   @id @unique @default(cuid())
+  id        String   @id @unique
   eventId   String
   userId    String
   nftId     String? // NFT submitted for voting
@@ -392,6 +381,11 @@ enum NftType {
 enum Role {
     ADMIN
     USER
+}
+
+enum LikeType {
+  post
+  nft
 }
 
 enum ActivityType {

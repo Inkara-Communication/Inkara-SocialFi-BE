@@ -8,7 +8,7 @@ services:
     env_file:
       - .env
     ports:
-      - 3001:3001
+      - 8080:8080
     depends_on:
       - mongodb
     volumes:
@@ -16,18 +16,39 @@ services:
     networks:
       - ${NETWORK}
 
-  mongodb:
-    container_name: mongodb
-    image: mongo:latest
+  postgres:
+    container_name: inkara_postgres
+    image: postgres
+    ports:
+      - '5432:5432'
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+      PGDATA: /data/postgres
+      TZ: 'Etc/UTC'
     volumes:
-      - dbdata:/data/db
+      - postgres:/data/postgres
+    networks:
+      - ${NETWORK}
+
+  redis:
+    container_name: inkara_redis
+    image: redis:latest
+    ports:
+      - '6379:6379'
+    environment:
+      TZ: 'Etc/UTC'
+    volumes:
+      - redis:/data
     networks:
       - ${NETWORK}
 
 networks:
-  kaine_network:
+  inkara_network:
     driver: bridge
     name: ${NETWORK}
 
 volumes:
-  dbdata:
+  postgres:
+  redis:

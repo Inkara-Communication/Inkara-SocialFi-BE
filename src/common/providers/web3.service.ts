@@ -22,10 +22,6 @@ import {
   // OrderParameters,
   TokenData
 } from '@common/types'
-import * as bip39 from 'bip39'
-import assert from 'assert'
-import CryptoJS from 'crypto-js'
-import { ethers } from 'ethers'
 // import { ListingDto } from '@modules/listing/dto/listing.dto'
 // import { AcceptOfferDto } from '@modules/offer/dto/accept-offer.dto'
 
@@ -179,20 +175,6 @@ export class Web3Service {
     network: Network
   ): Contract<typeof INKARA_BADGE_CONTRACT_ABI> {
     return this.inkaraBadgeContract[network]
-  }
-
-  public async getPrivateIndex(mnemonic: string, index: number) {
-    const decryptedBytes = CryptoJS.AES.decrypt(mnemonic, '')
-    const decryptedMnemonic = decryptedBytes.toString(CryptoJS.enc.Utf8)
-    assert(bip39.validateMnemonic(decryptedMnemonic), 'Invalid mnemonic')
-
-    const derivePath = `m/44'/60'/0'/0/${index}`
-    const seed = await bip39.mnemonicToSeed(mnemonic)
-    const hdWallet = ethers.utils.HDNode.fromSeed(seed)
-    const wallet = hdWallet.derivePath(derivePath)
-    const privateKey = wallet.privateKey
-
-    return privateKey
   }
 
   async mintNft({ network, txHash }: { network: Network; txHash: string }) {

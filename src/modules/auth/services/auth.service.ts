@@ -19,15 +19,7 @@ import { RedisService } from '@redis/redis.service'
 import { ForbiddenException, NotFoundException } from '../../../errors'
 import { SigninDto } from '../dto/signin.dto'
 import { TokenService } from './token.service'
-import {
-  ListAddressIndexInput,
-  VerifyGoogleInput
-} from '@modules/auth/dto/signin-google.dto'
-import { ethers } from 'ethers'
-import assert from 'assert'
-import * as bip39 from 'bip39'
-import CryptoJS from 'crypto-js'
-import { OAuth2Client, type TokenPayload } from 'google-auth-library'
+import { SignupDto } from '../dto/signup.dto'
 
 @Injectable()
 export class AuthService {
@@ -53,98 +45,30 @@ export class AuthService {
     return true
   }
 
-  public async VerifyGoogle({ googleTokenId }: VerifyGoogleInput) {
-    try {
-      const client = new OAuth2Client()
-      const ticket = await client.verifyIdToken({
-        idToken: googleTokenId
-      })
-      const payload = ticket.getPayload() as TokenPayload
-      const { email, name } = payload
+  public async signUp({ address }: SignupDto) {
+    this.logger.log(`${'*'.repeat(20)} signUp(${address}) ${'*'.repeat(20)}`)
 
-      let user = await this.prismaService.user.findUnique({
-        where: { email }
-      })
+    this.tokenService.verifyWallet(address)
 
-      if (!user) {
-        const mnemonic = this.createWallet()
-        const encryptedMnemonic = CryptoJS.AES.encrypt(mnemonic, '').toString()
-        const privateKey = await this.web3Service.getPrivateIndex(
-          encryptedMnemonic,
-          0
-        )
-        const address = new ethers.Wallet(privateKey).address
-        user = await this.prismaService.user.create({
-          data: {
-            id: this.generatorService.uuid(),
-            username: name,
-            address: address,
-            email,
-            mnemonic: encryptedMnemonic,
-            nonce: this.generatorService.generateRandomNonce(),
-            lastLoginAt: new Date()
-          }
-        })
-      } else {
-        user = await this.prismaService.user.update({
-          where: { email },
-          data: { lastLoginAt: new Date() }
-        })
+    const nonce = this.generatorService.generateRandomNonce()
+    const users = await this.prismaService.user.findMany({
+      where: {
+        address
       }
-      return user
-    } catch (error: any) {
-      throw error.message
-    }
-  }
-
-  public createWallet = () => {
-    const wallet = ethers.Wallet.createRandom()
-    const mnemonic = wallet.mnemonic.phrase
-    return mnemonic
-  }
-
-  public getAddressIndexs = async (mnemonic: string, listIndex: number[]) => {
-    assert(bip39.validateMnemonic(mnemonic), 'Invalid mnemonic')
-    const listAddress = []
-    for (const element of listIndex) {
-      const { address } = ethers.utils.HDNode.fromMnemonic(mnemonic).derivePath(
-        `m/44'/60'/0'/0/${element}`
-      )
-      listAddress.push(address)
-    }
-    return listAddress
-  }
-
-  public async getAddressIndexWallet({
-    googleTokenId,
-    listIndex
-  }: ListAddressIndexInput) {
-    try {
-      const client = new OAuth2Client()
-      const ticket = await client.verifyIdToken({
-        idToken: googleTokenId
+    })
+    if (users.length > 0) {
+      await this.prismaService.user.update({
+        where: { address },
+        data: { nonce }
       })
-      const payload = ticket.getPayload() as TokenPayload
-      const { email } = payload
-
-      const user = await this.prismaService.user.findUnique({
-        where: { email }
+    } else {
+      await this.userService.createUser({
+        nonce: nonce,
+        address: address
       })
-      const mnemonic = user?.mnemonic || ''
-      const decryptedBytes = CryptoJS.AES.decrypt(mnemonic, '')
-      const decryptedMnemonic = decryptedBytes.toString(CryptoJS.enc.Utf8)
-      if (typeof mnemonic === 'string') {
-        const listAddress = await this.getAddressIndexs(
-          decryptedMnemonic,
-          listIndex
-        )
-        return listAddress
-      } else {
-        throw new Error('Mnemonic is undefined')
-      }
-    } catch (error) {
-      throw new InternalServerErrorException(error)
     }
+
+    return nonce
   }
 
   public async signIn({ address, signature }: SigninDto) {
